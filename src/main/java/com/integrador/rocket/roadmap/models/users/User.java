@@ -1,9 +1,16 @@
 package com.integrador.rocket.roadmap.models.users;
 
+import com.integrador.rocket.roadmap.models.ai.AiInteraction;
 import com.integrador.rocket.roadmap.models.comments.Comment;
 import com.integrador.rocket.roadmap.models.conversations.Conversation;
 import com.integrador.rocket.roadmap.models.messages.Message;
 import com.integrador.rocket.roadmap.models.posts.Post;
+import com.integrador.rocket.roadmap.models.roadmaps.Roadmap;
+import com.integrador.rocket.roadmap.models.userroadmaps.UserRoadmap;
+import com.integrador.rocket.roadmap.models.users.dto.UserRegister;
+import com.integrador.rocket.roadmap.models.users.dto.UserUpdate;
+import com.integrador.rocket.roadmap.models.userstepprogress.UserStepProgress;
+import com.integrador.rocket.roadmap.models.vocationaltestresults.VocationalTestResult;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -36,23 +43,26 @@ public class User implements UserDetails {
 
     private String name;
 
+    @Column(unique = true, nullable = false)
     private String email;
 
     private String role;
 
     private String password;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Post> posts;
+    private boolean isActive = true;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
-    private LocalDateTime updated_at;
+    private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Post> posts;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
     @ManyToMany(mappedBy = "participants")
@@ -61,8 +71,27 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Message> messages;
 
-    // CREATED_ROADMAPS, STEP_PROGRESS, VOCACIONAL_RESULTS, AI_INTERACTIONS
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private VocationalTestResult vocationalTestResults;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Roadmap> roadmaps;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<UserRoadmap> userRoadmaps;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<UserStepProgress> userStepProgresses;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<AiInteraction> aiInteractions;
+
+    public User(UserRegister userRegister) {
+        this.name = userRegister.name();
+        this.email = userRegister.email();
+        this.role = userRegister.role();
+        this.password = userRegister.password();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -71,7 +100,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return "";
+        return this.email;
     }
 
     @Override
@@ -92,6 +121,28 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
+    }
+
+    public void actualizar(UserUpdate userUpdate) {
+
+        if (userUpdate.name() != null) {
+            this.name = userUpdate.name();
+        }
+
+        if (userUpdate.email() != null) {
+            this.name = userUpdate.email();
+        }
+
+        if (userUpdate.role() != null) {
+            this.name = userUpdate.role();
+        }
+        if (userUpdate.password() != null) {
+            this.name = userUpdate.password();
+        }
+    }
+
+    public void eliminar(){
+        this.isActive = false;
     }
 
 }

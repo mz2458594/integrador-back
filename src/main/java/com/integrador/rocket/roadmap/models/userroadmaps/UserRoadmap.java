@@ -1,6 +1,6 @@
-package com.integrador.rocket.roadmap.models.messages;
+package com.integrador.rocket.roadmap.models.userroadmaps;
 
-import com.integrador.rocket.roadmap.models.conversations.Conversation;
+import com.integrador.rocket.roadmap.models.roadmaps.Roadmap;
 import com.integrador.rocket.roadmap.models.users.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,31 +12,28 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "messages")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class Message {
+@Table(name = "user_roadmap", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "roadmap_id"}))
+public class UserRoadmap {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String content;
-
-    private boolean isFromAgent = false;
+    private String status;
 
     @CreatedDate
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @ManyToOne
-    @JoinColumn(name = "conversation_id")
-    private Conversation conversation;
+    private LocalDateTime startedAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "roadmap_id")
+    private Roadmap roadmap;
 
 }

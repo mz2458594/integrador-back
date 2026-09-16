@@ -25,11 +25,12 @@ public class Conversation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     private ConversationType type;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL)
     private List<Message> messages;
