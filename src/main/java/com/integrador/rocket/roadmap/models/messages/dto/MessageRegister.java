@@ -9,8 +9,6 @@ import java.time.LocalDateTime;
 public record MessageRegister(
         @NotBlank String content,
         @NotNull Long conversation_id
-//        boolean isFromAgent // ESTA VARIABLE SE MARCA EN EL METODO DE ENVIAR MENSAJE POR AGENTE
-// EL USER_ID LO OBTIENES EN EL CONTROLADOR
-//        @NotNull Long user_id
+//        boolean isFromAgent
 ) {
 }

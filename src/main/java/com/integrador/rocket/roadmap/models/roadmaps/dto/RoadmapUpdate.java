@@ -6,11 +6,8 @@ import jakarta.validation.constraints.NotNull;
 
 public record RoadmapUpdate(
         String title,
-
         String description,
-
         String category,
-        boolean isPublic,
-        CreationSource createdVia
+        boolean isPublic
 ) {
 }

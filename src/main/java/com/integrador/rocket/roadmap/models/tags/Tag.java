@@ -1,7 +1,10 @@
 package com.integrador.rocket.roadmap.models.tags;
 
 import com.integrador.rocket.roadmap.models.posts.Post;
+import com.integrador.rocket.roadmap.models.tags.dto.TagRegister;
+import com.integrador.rocket.roadmap.models.tags.dto.TagUpdate;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -24,5 +27,19 @@ public class Tag {
 
     @ManyToMany(mappedBy = "tags") //nombre de la variable en la clase post
     private List<Post> posts = new ArrayList<>();
+
+    public Tag(@Valid TagRegister tagRegister) {
+
+        this.name = tagRegister.name();
+
+    }
+
+    public void actualizar(TagUpdate tagUpdate) {
+        if (tagUpdate.name() != null){
+            this.name = name;
+        }
+    }
+
+    //EL TAG SE CREA PRIMERO, LUEGO SE LE ASOCIA A UN POST EN EL CONTROLADOR DE POST
 
 }

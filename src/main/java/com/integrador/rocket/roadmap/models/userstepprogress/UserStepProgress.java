@@ -2,10 +2,14 @@ package com.integrador.rocket.roadmap.models.userstepprogress;
 
 import com.integrador.rocket.roadmap.models.roadmapsteps.RoadmapStep;
 import com.integrador.rocket.roadmap.models.users.User;
+import com.integrador.rocket.roadmap.models.userstepprogress.dto.UserStepProgressRegister;
+import com.integrador.rocket.roadmap.models.userstepprogress.dto.UserStepProgressUpdate;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -24,6 +28,7 @@ public class UserStepProgress {
 
     private String status;
 
+    @CreatedDate
     private LocalDateTime completedAt;
 
     @ManyToOne
@@ -34,4 +39,15 @@ public class UserStepProgress {
     @JoinColumn(name = "step_id")
     private RoadmapStep roadmapStep;
 
+    public UserStepProgress(@Valid UserStepProgressRegister userStepProgressRegister, RoadmapStep roadmapStep, User user) {
+
+        this.status = userStepProgressRegister.status();
+        this.user = user;
+        this.roadmapStep = roadmapStep;
+
+    }
+
+    public void actualizar(UserStepProgressUpdate userStepProgressUpdate) {
+        this.status = userStepProgressUpdate.status();
+    }
 }

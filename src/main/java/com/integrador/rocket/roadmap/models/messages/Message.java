@@ -1,8 +1,10 @@
 package com.integrador.rocket.roadmap.models.messages;
 
 import com.integrador.rocket.roadmap.models.conversations.Conversation;
+import com.integrador.rocket.roadmap.models.messages.dto.MessageUpdate;
 import com.integrador.rocket.roadmap.models.users.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,4 +41,19 @@ public class Message {
     @JoinColumn(name = "user_id")
     private User user;
 
+    public Message(String content, Conversation conversation, User user) {
+        this.content = content;
+        this.conversation = conversation;
+        if (user == null) {
+            this.isFromAgent = true;
+        }
+        this.user = user;
+    }
+
+
+    public void actualizar(MessageUpdate messageUpdate) {
+        if (messageUpdate.content() != null) {
+            this.content = messageUpdate.content();
+        }
+    }
 }

@@ -13,12 +13,12 @@ public record VocationalQuestionDetail(
         int order,
         List<VocationalOptionDetail> vocacionalOptions
 ) {
-    public VocationalQuestionDetail(VocationalQuestion vocationalQuestion){
+    public VocationalQuestionDetail(VocationalQuestion vocationalQuestion, List<VocationalOption> vocationalOptions){
         this(
                 vocationalQuestion.getId(),
                 vocationalQuestion.getText(),
                 vocationalQuestion.getOrderIndex(),
-                vocationalQuestion.getVocacionalOptions().stream().map(VocationalOptionDetail::new).toList()
+                vocationalOptions.stream().map(VocationalOptionDetail::new).toList()
         );
     }
 }

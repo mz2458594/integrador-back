@@ -1,9 +1,13 @@
 package com.integrador.rocket.roadmap.models.roadmapsteps;
 
 import com.integrador.rocket.roadmap.models.roadmaps.Roadmap;
+import com.integrador.rocket.roadmap.models.roadmapsteps.dto.RoadmapStepRegister;
+import com.integrador.rocket.roadmap.models.roadmapsteps.dto.RoadmapStepUpdate;
 import com.integrador.rocket.roadmap.models.stepresources.StepResource;
+import com.integrador.rocket.roadmap.models.users.User;
 import com.integrador.rocket.roadmap.models.userstepprogress.UserStepProgress;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +31,7 @@ public class RoadmapStep {
 
     private String description;
 
-    private int orderIndex;
+    private Integer orderIndex;
 
     @ManyToOne
     @JoinColumn(name = "roadmap_id")
@@ -39,4 +43,24 @@ public class RoadmapStep {
     @OneToMany(mappedBy = "roadmapStep", cascade = CascadeType.ALL)
     private List<UserStepProgress> userStepProgresses;
 
+    public RoadmapStep(@Valid RoadmapStepRegister roadmapStepRegister, Roadmap roadmap) {
+        this.title = roadmapStepRegister.title();
+        this.description = roadmapStepRegister.description();
+        this.orderIndex = roadmapStepRegister.orderIndex();
+        this.roadmap = roadmap;
+    }
+
+    public void actualizar(RoadmapStepUpdate roadmapStepUpdate) {
+        if (roadmapStepUpdate.title() != null){
+            this.title = roadmapStepUpdate.title();
+        }
+
+        if (roadmapStepUpdate.description() != null){
+            this.description = roadmapStepUpdate.description();
+        }
+
+        if (roadmapStepUpdate.orderIndex() != null){
+            this.orderIndex = roadmapStepUpdate.orderIndex();
+        }
+    }
 }

@@ -1,9 +1,12 @@
 package com.integrador.rocket.roadmap.models.posts;
 
 import com.integrador.rocket.roadmap.models.comments.Comment;
+import com.integrador.rocket.roadmap.models.posts.dto.PostRegister;
+import com.integrador.rocket.roadmap.models.posts.dto.PostUpdate;
 import com.integrador.rocket.roadmap.models.tags.Tag;
 import com.integrador.rocket.roadmap.models.users.User;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -32,7 +35,7 @@ public class Post {
 
     private String content;
 
-    private int views = 0;
+    private Integer views = 0;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -53,4 +56,26 @@ public class Post {
     @OneToMany(mappedBy = "post")
     private List<Comment> comments;
 
+    public Post(@Valid PostRegister postRegister, User user, List<Tag> tags) {
+        this.title = postRegister.title();
+        this.content = postRegister.content();
+        this.user = user;
+        //VALIDAR LO DE TAGS
+        this.tags = tags;
+
+    }
+
+
+    public void actualizar(PostUpdate postUpdate, List<Tag> tags) {
+        if (postUpdate.title() != null){
+            this.title = postUpdate.title();
+        }
+        if (postUpdate.content() != null){
+            this.content = postUpdate.content();
+        }
+
+        if (tags != null){
+            this.tags = tags;
+        }
+    }
 }

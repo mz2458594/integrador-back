@@ -15,7 +15,7 @@ public record PostList(
         String content,
         Integer views,
         LocalDateTime createdAt,
-        UserDetail user,
+        Long userId,
         List<TagList> tags,
 
         //VARIABLE APARTE CUANDO SE CREE EL SERVICIO
@@ -29,7 +29,7 @@ public record PostList(
                 post.getContent(),
                 post.getViews(),
                 post.getCreatedAt(),
-                new UserDetail(post.getUser()),
+                post.getUser().getId(),
                 post.getTags().stream().map(TagList::new).toList(),
                 commentsCount
         );

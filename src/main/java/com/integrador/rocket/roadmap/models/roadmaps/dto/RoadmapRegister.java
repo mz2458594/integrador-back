@@ -14,8 +14,5 @@ public record RoadmapRegister(
         @NotNull boolean isPublic,
 
         @NotNull CreationSource createdVia
-// EL REGISTRO DEL USUARIO ID VA EN EL SERVICE
-        // EL ID DEL USUARIO ESTARA EN EL @AuthenticationPrincipal EN EL CONTROLLER
-//        Long userId
 ) {
 }

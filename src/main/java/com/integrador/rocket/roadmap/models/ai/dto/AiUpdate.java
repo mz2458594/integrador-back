@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 
 public record AiUpdate(
         AiPurpose purpose,
-        Long relatedRoadmapId,
-        Long user_id
+        Long relatedRoadmapId
 ) {
 }

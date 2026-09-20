@@ -86,11 +86,11 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<AiInteraction> aiInteractions;
 
-    public User(UserRegister userRegister) {
+    public User(UserRegister userRegister, String password) {
         this.name = userRegister.name();
         this.email = userRegister.email();
         this.role = userRegister.role();
-        this.password = userRegister.password();
+        this.password = password;
     }
 
     @Override
@@ -123,7 +123,7 @@ public class User implements UserDetails {
         return UserDetails.super.isEnabled();
     }
 
-    public void actualizar(UserUpdate userUpdate) {
+    public void actualizar(UserUpdate userUpdate, String password) {
 
         if (userUpdate.name() != null) {
             this.name = userUpdate.name();
@@ -137,7 +137,7 @@ public class User implements UserDetails {
             this.name = userUpdate.role();
         }
         if (userUpdate.password() != null) {
-            this.name = userUpdate.password();
+            this.name = password;
         }
     }
 

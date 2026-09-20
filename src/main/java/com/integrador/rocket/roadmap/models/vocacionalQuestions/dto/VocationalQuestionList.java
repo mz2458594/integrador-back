@@ -22,7 +22,7 @@ public record VocationalQuestionList(
                 vocationalQuestion.getId(),
                 vocationalQuestion.getText(),
                 vocationalQuestion.getOrderIndex(),
-                vocationalQuestion.getVocacionalOptions().stream().map(VocationalOptionDetail::new).toList()
+                vocationalQuestion.getVocationalOptions().stream().map(VocationalOptionDetail::new).toList()
         );
     }
 }

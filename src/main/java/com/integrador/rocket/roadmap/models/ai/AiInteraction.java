@@ -1,7 +1,11 @@
 package com.integrador.rocket.roadmap.models.ai;
 
+import com.integrador.rocket.roadmap.models.ai.dto.AiRegister;
+import com.integrador.rocket.roadmap.models.ai.dto.AiUpdate;
 import com.integrador.rocket.roadmap.models.users.User;
+import com.integrador.rocket.roadmap.models.users.dto.UserUpdate;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,4 +37,24 @@ public class AiInteraction {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public AiInteraction(@Valid AiRegister aiRegister, User user) {
+        this.purpose = aiRegister.purpose();
+        if (aiRegister.relatedRoadmapId() != null){
+            this.relatedRoadmapId = aiRegister.relatedRoadmapId();
+        }
+        this.user =user;
+    }
+
+    public void actualizar(AiUpdate aiUpdate) {
+
+        if (aiUpdate.purpose() != null) {
+            this.purpose = aiUpdate.purpose();
+        }
+
+        if (aiUpdate.relatedRoadmapId() != null) {
+            this.relatedRoadmapId = aiUpdate.relatedRoadmapId();
+        }
+    }
+
 }

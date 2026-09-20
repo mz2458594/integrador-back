@@ -1,8 +1,12 @@
 package com.integrador.rocket.roadmap.models.conversations;
 
+import com.integrador.rocket.roadmap.models.comments.dto.CommentUpdate;
+import com.integrador.rocket.roadmap.models.conversations.dto.ConversationRegister;
+import com.integrador.rocket.roadmap.models.conversations.dto.ConversationUpdate;
 import com.integrador.rocket.roadmap.models.messages.Message;
 import com.integrador.rocket.roadmap.models.users.User;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,4 +48,12 @@ public class Conversation {
     private List<User> participants = new ArrayList<>();
 
 
+    public Conversation(@Valid ConversationRegister conversationRegister, List<User> participants) {
+        this.type = conversationRegister.type();
+        this.participants = participants;
+    }
+
+    public void actualizar(ConversationUpdate conversationUpdate) {
+
+    }
 }

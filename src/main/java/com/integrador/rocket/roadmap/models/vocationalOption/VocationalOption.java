@@ -1,6 +1,8 @@
 package com.integrador.rocket.roadmap.models.vocationalOption;
 
 import com.integrador.rocket.roadmap.models.vocacionalQuestions.VocationalQuestion;
+import com.integrador.rocket.roadmap.models.vocationalOption.dto.VocationalOptionRegister;
+import com.integrador.rocket.roadmap.models.vocationalOption.dto.VocationalOptionUpdate;
 import com.integrador.rocket.roadmap.models.vocationaltestresults.VocationalTestResult;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -35,13 +37,23 @@ public class VocationalOption {
     @Column(columnDefinition = "jsonb")
     private Map<String, Integer> careerScore;
 
-    @ManyToMany
-    @JoinTable(
-            name = "vocational_answer",
-            joinColumns = @JoinColumn(name = "option_id"),
-            inverseJoinColumns = @JoinColumn(name = "result_id")
-    )
+    @ManyToMany(mappedBy = "vocationalOptions")
     private List<VocationalTestResult> vocationalTestResults = new ArrayList<>();
 
 
+    public VocationalOption(VocationalOptionRegister v, VocationalQuestion vocationalQuestion) {
+        this.text = v.text();
+        this.careerScore = v.careerScore();
+        this.question = vocationalQuestion;
+    }
+
+    public void actualizar(VocationalOptionUpdate vocationalOptionUpdate) {
+        if (vocationalOptionUpdate.text() != null) {
+            this.text = vocationalOptionUpdate.text();
+        }
+
+        if (vocationalOptionUpdate.careerScore() != null) {
+            this.careerScore = vocationalOptionUpdate.careerScore();
+        }
+    }
 }

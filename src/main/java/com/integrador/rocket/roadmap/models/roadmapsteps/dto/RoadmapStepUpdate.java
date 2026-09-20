@@ -8,7 +8,7 @@ public record RoadmapStepUpdate(
 
         String description,
 
-        int orderIndex
+        Integer orderIndex
 
 ) {
 }

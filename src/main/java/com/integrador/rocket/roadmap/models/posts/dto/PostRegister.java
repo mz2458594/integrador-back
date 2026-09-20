@@ -12,8 +12,6 @@ import java.util.List;
 public record PostRegister(
         @NotBlank String title,
         @NotBlank String content,
-        // EL REGISTRO DEL USUARIO ID VA EN EL SERVICE
-        // EL ID DEL USUARIO ESTARA EN EL @AuthenticationPrincipal EN EL CONTROLLER
-        @NotEmpty List<String> tagNames
+        List<Long> tagIds
 ) {
 }

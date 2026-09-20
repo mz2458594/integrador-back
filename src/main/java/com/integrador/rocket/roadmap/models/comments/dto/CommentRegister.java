@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 
 public record CommentRegister(
         @NotNull Long post_id,
-        @NotNull Long user_id,
         @NotBlank String content
 ) {
 }

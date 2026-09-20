@@ -1,8 +1,11 @@
 package com.integrador.rocket.roadmap.models.comments;
 
+import com.integrador.rocket.roadmap.models.comments.dto.CommentRegister;
+import com.integrador.rocket.roadmap.models.comments.dto.CommentUpdate;
 import com.integrador.rocket.roadmap.models.posts.Post;
 import com.integrador.rocket.roadmap.models.users.User;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -39,4 +42,15 @@ public class Comment {
     private LocalDateTime createdAt;
 
 
+    public Comment(@Valid CommentRegister commentRegister, User user, Post post) {
+        this.user = user;
+        this.content = commentRegister.content();
+        this.post = post;
+    }
+
+    public void actualizar(CommentUpdate commentUpdate) {
+        if (commentUpdate.content() != null){
+            this.content = commentUpdate.content();
+        }
+    }
 }

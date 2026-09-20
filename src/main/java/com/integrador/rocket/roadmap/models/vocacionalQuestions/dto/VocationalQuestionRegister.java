@@ -11,6 +11,6 @@ import java.util.List;
 public record VocationalQuestionRegister(
         @NotBlank String text,
         @NotNull int order,
-        @Valid VocationalOptionRegister vocationalOptionRegister
+        @Valid List<VocationalOptionRegister> vocationalOptionRegisters
         ) {
 }

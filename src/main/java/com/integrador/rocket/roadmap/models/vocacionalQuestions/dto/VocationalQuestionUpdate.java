@@ -5,6 +5,6 @@ import jakarta.validation.constraints.NotNull;
 
 public record VocationalQuestionUpdate(
         String text,
-        int order
+        Integer order
 ) {
 }

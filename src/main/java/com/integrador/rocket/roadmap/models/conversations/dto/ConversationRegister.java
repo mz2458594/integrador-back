@@ -10,6 +10,6 @@ import java.util.List;
 
 public record ConversationRegister(
         @NotNull ConversationType type,
-        @NotNull List<Long> participantIds
+        @NotNull Long participantId
 ) {
 }
