@@ -1,16 +1,14 @@
 package com.integrador.rocket.roadmap.models.userstepprogress.dto;
 
-import com.integrador.rocket.roadmap.models.roadmapsteps.RoadmapStep;
-import com.integrador.rocket.roadmap.models.users.dto.UserDetail;
+import com.integrador.rocket.roadmap.models.userstepprogress.Status;
 import com.integrador.rocket.roadmap.models.userstepprogress.UserStepProgress;
-import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
 public record UserStepProgressDetail(
         Long id,
 
-        String status,
+        Status status,
 
         LocalDateTime completedAt,
 

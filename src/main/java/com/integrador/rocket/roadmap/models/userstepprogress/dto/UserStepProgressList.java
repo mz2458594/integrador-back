@@ -1,5 +1,6 @@
 package com.integrador.rocket.roadmap.models.userstepprogress.dto;
 
+import com.integrador.rocket.roadmap.models.userstepprogress.Status;
 import com.integrador.rocket.roadmap.models.userstepprogress.UserStepProgress;
 
 import java.time.LocalDateTime;
@@ -7,7 +8,7 @@ import java.time.LocalDateTime;
 public record UserStepProgressList(
         Long id,
 
-        String status,
+        Status status,
 
         LocalDateTime completedAt,
 

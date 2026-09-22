@@ -1,5 +1,6 @@
 package com.integrador.rocket.roadmap.models.users.dto;
 
+import com.integrador.rocket.roadmap.models.users.Role;
 import com.integrador.rocket.roadmap.models.users.User;
 import jakarta.validation.constraints.NotBlank;
 
@@ -10,7 +11,7 @@ public record UserList (
         String name,
         String email,
         //VERIFICAR SI ROLE SERA ENUM O NO
-        String role,
+        Role role,
         LocalDateTime createadAt,
         LocalDateTime updateAt
 ) {
