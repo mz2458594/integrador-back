@@ -1,13 +1,13 @@
 package com.integrador.rocket.roadmap.models.userstepprogress.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import com.integrador.rocket.roadmap.models.userstepprogress.Status;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
 public record UserStepProgressRegister(
 
-        @NotBlank String status,
+        @NotNull Status status,
 
 // EL USERID LO AGARRAS DEL TOKEN
 //        Long userId,

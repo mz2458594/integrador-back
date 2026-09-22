@@ -1,9 +1,10 @@
 package com.integrador.rocket.roadmap.models.userstepprogress.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import com.integrador.rocket.roadmap.models.userstepprogress.Status;
+import jakarta.validation.constraints.NotNull;
 
 public record UserStepProgressUpdate(
-        String status
+        @NotNull Status status
 
 ) {
 }

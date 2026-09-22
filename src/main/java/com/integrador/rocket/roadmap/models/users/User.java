@@ -21,6 +21,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
@@ -46,7 +47,8 @@ public class User implements UserDetails {
     @Column(unique = true, nullable = false)
     private String email;
 
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     private String password;
 
@@ -89,13 +91,26 @@ public class User implements UserDetails {
     public User(UserRegister userRegister, String password) {
         this.name = userRegister.name();
         this.email = userRegister.email();
-        this.role = userRegister.role();
+        if (userRegister.role() != null) {
+            this.role = userRegister.role();
+        } else {
+            this.role = Role.ESTUDIANTE;
+        }
         this.password = password;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + this.role.name()));
+
+        this.role.getPermissions().forEach(permission ->
+                authorities.add(new SimpleGrantedAuthority(permission))
+        );
+
+        return authorities;
+
     }
 
     @Override
@@ -130,18 +145,18 @@ public class User implements UserDetails {
         }
 
         if (userUpdate.email() != null) {
-            this.name = userUpdate.email();
+            this.email = userUpdate.email();
         }
 
         if (userUpdate.role() != null) {
-            this.name = userUpdate.role();
+            this.role = userUpdate.role();
         }
         if (userUpdate.password() != null) {
-            this.name = password;
+            this.password = password;
         }
     }
 
-    public void eliminar(){
+    public void eliminar() {
         this.isActive = false;
     }
 

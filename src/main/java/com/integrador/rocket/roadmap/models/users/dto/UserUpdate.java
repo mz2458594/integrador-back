@@ -1,12 +1,11 @@
 package com.integrador.rocket.roadmap.models.users.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import com.integrador.rocket.roadmap.models.users.Role;
 
 public record UserUpdate(
         String name,
         String email,
-        // VALIDAR SI ROLE SERA UN ENUM
-        String role,
+        Role role,
         String password
 ) {
 }
