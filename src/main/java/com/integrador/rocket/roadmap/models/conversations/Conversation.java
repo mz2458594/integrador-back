@@ -37,7 +37,7 @@ public class Conversation {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL)
-    private List<Message> messages;
+    private List<Message> messages = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(

@@ -14,6 +14,7 @@ import org.hibernate.type.SqlTypes;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +37,7 @@ public class VocationalOption {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
-    private Map<String, Integer> careerScore;
+    private Map<String, Integer> careerScore = new HashMap<>();
 
     @ManyToMany(mappedBy = "vocationalOptions")
     private List<VocationalTestResult> vocationalTestResults = new ArrayList<>();

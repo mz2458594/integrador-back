@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -38,10 +39,10 @@ public class RoadmapStep {
     private Roadmap roadmap;
 
     @OneToMany(mappedBy = "roadmapStep", cascade = CascadeType.ALL)
-    private List<StepResource> stepResources;
+    private List<StepResource> stepResources = new ArrayList<>();
 
     @OneToMany(mappedBy = "roadmapStep", cascade = CascadeType.ALL)
-    private List<UserStepProgress> userStepProgresses;
+    private List<UserStepProgress> userStepProgresses = new ArrayList<>();
 
     public RoadmapStep(@Valid RoadmapStepRegister roadmapStepRegister, Roadmap roadmap) {
         this.title = roadmapStepRegister.title();

@@ -11,7 +11,7 @@ public record MessageDetail(
         boolean isFromAgent,
         LocalDateTime createdAt,
         Long conversation_id,
-        UserDetail user
+        Long user_id
 ) {
     public MessageDetail(Message message) {
         this(
@@ -20,7 +20,7 @@ public record MessageDetail(
                 message.isFromAgent(),
                 message.getCreatedAt(),
                 message.getConversation().getId(),
-                message.getUser() != null ? new UserDetail(message.getUser()) : null
+                message.getUser() != null ? message.getUser().getId():  null
         );
     }
 }

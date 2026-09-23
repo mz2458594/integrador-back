@@ -33,6 +33,7 @@ public class Post {
 
     private String title;
 
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     private Integer views = 0;
@@ -54,7 +55,7 @@ public class Post {
     private List<Tag> tags = new ArrayList<>();
 
     @OneToMany(mappedBy = "post")
-    private List<Comment> comments;
+    private List<Comment> comments = new ArrayList<>();
 
     public Post(@Valid PostRegister postRegister, User user, List<Tag> tags) {
         this.title = postRegister.title();

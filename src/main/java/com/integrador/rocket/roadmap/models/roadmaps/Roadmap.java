@@ -14,6 +14,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -30,6 +31,7 @@ public class Roadmap {
 
     private String title;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     private String category;
@@ -48,10 +50,10 @@ public class Roadmap {
 
 
     @OneToMany(mappedBy = "roadmap", cascade = CascadeType.ALL)
-    private List<RoadmapStep> roadmapSteps;
+    private List<RoadmapStep> roadmapSteps = new ArrayList<>();
 
     @OneToMany(mappedBy = "roadmap", cascade = CascadeType.ALL)
-    private List<UserRoadmap> userRoadmaps;
+    private List<UserRoadmap> userRoadmaps = new ArrayList<>();
 
     public Roadmap(@Valid RoadmapRegister roadmapRegister, User user) {
         this.title = roadmapRegister.title();

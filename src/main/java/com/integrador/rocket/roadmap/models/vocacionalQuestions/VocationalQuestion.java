@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,7 +27,7 @@ public class VocationalQuestion {
 //    private Integer orderIndex = 0;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
-    private List<VocationalOption> vocationalOptions;
+    private List<VocationalOption> vocationalOptions = new ArrayList<>();
 
 
     public VocationalQuestion(@Valid VocationalQuestionRegister vocationalQuestionRegister) {

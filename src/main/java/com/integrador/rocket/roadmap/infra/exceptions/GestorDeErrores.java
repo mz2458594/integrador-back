@@ -43,6 +43,11 @@ public class GestorDeErrores {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
+//    @ExceptionHandler(RuntimeException.class)
+//    public ResponseEntity handleRuntimeException(RuntimeException e) {
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+//    }
+
     public record DatosErrorValidacion(
             String campo,
             String mensaje

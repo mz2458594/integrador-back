@@ -62,31 +62,31 @@ public class User implements UserDetails {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Post> posts;
+    private List<Post> posts = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Comment> comments;
+    private List<Comment> comments = new ArrayList<>();
 
     @ManyToMany(mappedBy = "participants")
     private List<Conversation> conversations = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Message> messages;
+    private List<Message> messages = new ArrayList<>();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private VocationalTestResult vocationalTestResults;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Roadmap> roadmaps;
+    private List<Roadmap> roadmaps = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<UserRoadmap> userRoadmaps;
+    private List<UserRoadmap> userRoadmaps = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<UserStepProgress> userStepProgresses;
+    private List<UserStepProgress> userStepProgresses = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<AiInteraction> aiInteractions;
+    private List<AiInteraction> aiInteractions = new ArrayList<>();
 
     public User(UserRegister userRegister, String password) {
         this.name = userRegister.name();

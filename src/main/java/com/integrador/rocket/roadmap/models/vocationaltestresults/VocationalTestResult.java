@@ -13,6 +13,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -41,7 +42,7 @@ public class VocationalTestResult {
             joinColumns = @JoinColumn(name = "result_id"),
             inverseJoinColumns = @JoinColumn(name = "option_id")
     )
-    private List<VocationalOption> vocationalOptions;
+    private List<VocationalOption> vocationalOptions = new ArrayList<>();
 
 
     public VocationalTestResult(@Valid VocationalTestResultRegister vocationalTestResultRegister, List<VocationalOption> vocationalOptions, User user) {
