@@ -2,6 +2,7 @@ package com.integrador.rocket.roadmap.models.vocationalOption;
 
 import com.integrador.rocket.roadmap.models.vocacionalQuestions.VocationalQuestion;
 import com.integrador.rocket.roadmap.models.vocationalOption.dto.VocationalOptionRegister;
+import com.integrador.rocket.roadmap.models.vocationalOption.dto.VocationalOptionRegisterForQuestion;
 import com.integrador.rocket.roadmap.models.vocationalOption.dto.VocationalOptionUpdate;
 import com.integrador.rocket.roadmap.models.vocationaltestresults.VocationalTestResult;
 import jakarta.persistence.*;
@@ -42,6 +43,12 @@ public class VocationalOption {
 
 
     public VocationalOption(VocationalOptionRegister v, VocationalQuestion vocationalQuestion) {
+        this.text = v.text();
+        this.careerScore = v.careerScore();
+        this.question = vocationalQuestion;
+    }
+
+    public VocationalOption(VocationalOptionRegisterForQuestion v, VocationalQuestion vocationalQuestion) {
         this.text = v.text();
         this.careerScore = v.careerScore();
         this.question = vocationalQuestion;

@@ -14,14 +14,14 @@ import java.util.Map;
 public record VocationalQuestionList(
         Long id,
         String text,
-        int order,
+//        int order,
         List<VocationalOptionDetail> vocacionalOptions
 ) {
     public VocationalQuestionList(VocationalQuestion vocationalQuestion) {
         this(
                 vocationalQuestion.getId(),
                 vocationalQuestion.getText(),
-                vocationalQuestion.getOrderIndex(),
+//                vocationalQuestion.getOrderIndex(),
                 vocationalQuestion.getVocationalOptions().stream().map(VocationalOptionDetail::new).toList()
         );
     }

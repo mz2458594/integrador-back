@@ -23,7 +23,7 @@ public class VocationalQuestion {
     private Long id;
 
     private String text;
-    private Integer orderIndex;
+//    private Integer orderIndex = 0;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private List<VocationalOption> vocationalOptions;
@@ -31,7 +31,7 @@ public class VocationalQuestion {
 
     public VocationalQuestion(@Valid VocationalQuestionRegister vocationalQuestionRegister) {
         this.text = vocationalQuestionRegister.text();
-        this.orderIndex = vocationalQuestionRegister.order();
+//        this.orderIndex = vocationalQuestionRegister.order();
     }
 
     public void actualizar(VocationalQuestionUpdate vocationalQuestionUpdate) {
@@ -40,9 +40,9 @@ public class VocationalQuestion {
             this.text = vocationalQuestionUpdate.text();
         }
 
-        if (vocationalQuestionUpdate.order() != null) {
-            this.orderIndex = vocationalQuestionUpdate.order();
-        }
+//        if (vocationalQuestionUpdate.order() != null) {
+//            this.orderIndex = vocationalQuestionUpdate.order();
+//        }
 
     }
 }

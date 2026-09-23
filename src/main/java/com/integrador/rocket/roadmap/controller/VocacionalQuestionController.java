@@ -8,6 +8,7 @@ import com.integrador.rocket.roadmap.models.vocacionalQuestions.dto.VocationalQu
 import com.integrador.rocket.roadmap.models.vocacionalQuestions.dto.VocationalQuestionUpdate;
 import com.integrador.rocket.roadmap.models.vocationalOption.VocationalOption;
 import com.integrador.rocket.roadmap.models.vocationalOption.dto.VocationalOptionRegister;
+import com.integrador.rocket.roadmap.models.vocationalOption.dto.VocationalOptionRegisterForQuestion;
 import com.integrador.rocket.roadmap.repositories.VocationalOptionRepository;
 import com.integrador.rocket.roadmap.repositories.VocationalQuestionRepository;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -58,7 +59,7 @@ public class VocacionalQuestionController {
         List<VocationalOption> vocationalOptions = new ArrayList<>();
 
         if (vocationalQuestionRegister.vocationalOptionRegisters() != null) {
-            for (VocationalOptionRegister v: vocationalQuestionRegister.vocationalOptionRegisters()){
+            for (VocationalOptionRegisterForQuestion v: vocationalQuestionRegister.vocationalOptionRegisters()){
                 var option = vocationalOptionRepository.save(new VocationalOption(v, vocationalQuestion));
                 vocationalOptions.add(option);
             }

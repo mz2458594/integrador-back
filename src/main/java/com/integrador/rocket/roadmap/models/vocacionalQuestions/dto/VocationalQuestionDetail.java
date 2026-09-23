@@ -10,14 +10,14 @@ import java.util.List;
 public record VocationalQuestionDetail(
         Long id,
         String text,
-        int order,
+//        int order,
         List<VocationalOptionDetail> vocacionalOptions
 ) {
     public VocationalQuestionDetail(VocationalQuestion vocationalQuestion, List<VocationalOption> vocationalOptions){
         this(
                 vocationalQuestion.getId(),
                 vocationalQuestion.getText(),
-                vocationalQuestion.getOrderIndex(),
+//                vocationalQuestion.getOrderIndex(),
                 vocationalOptions.stream().map(VocationalOptionDetail::new).toList()
         );
     }

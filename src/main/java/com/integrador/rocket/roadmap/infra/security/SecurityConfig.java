@@ -32,6 +32,8 @@ public class SecurityConfig {
                     request.requestMatchers(HttpMethod.POST, "/login").permitAll();
                     request.requestMatchers(HttpMethod.POST, "/register").permitAll();
                     request.requestMatchers("/actuator/health").permitAll();
+                    request.requestMatchers(HttpMethod.POST, "/vocational-question").hasRole("ADMINISTRADOR");
+                    request.requestMatchers(HttpMethod.POST, "/vocational-option").hasRole("ADMINISTRADOR");
                     request.requestMatchers("/v3/api-docs/**", "/swagger-ui.html/**", "/swagger-ui/**").permitAll();
                     request.anyRequest().authenticated();
                 })
