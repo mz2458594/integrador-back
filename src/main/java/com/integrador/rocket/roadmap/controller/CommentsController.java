@@ -22,7 +22,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/comment")
-@SecurityRequirement(name = "bearer-key")
 public class CommentsController {
 
     @Autowired

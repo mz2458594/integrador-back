@@ -26,7 +26,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/vocational-test-result")
-@SecurityRequirement(name = "bearer-key")
 public class VocationalTestResultController {
 
     @Autowired

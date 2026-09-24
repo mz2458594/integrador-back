@@ -23,7 +23,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/vocational-option")
-@SecurityRequirement(name = "bearer-key")
 public class VocationalOptionController {
     @Autowired
     private VocationalQuestionRepository vocationalQuestionRepository;

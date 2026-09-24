@@ -27,7 +27,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/post")
-@SecurityRequirement(name = "bearer-key")
 public class PostController {
 
     @Autowired

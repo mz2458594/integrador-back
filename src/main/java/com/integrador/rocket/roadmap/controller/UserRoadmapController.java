@@ -22,7 +22,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/user-roadmap")
-@SecurityRequirement(name = "bearer-key")
 public class UserRoadmapController {
 
     @Autowired

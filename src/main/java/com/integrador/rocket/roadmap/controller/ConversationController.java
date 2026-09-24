@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@SecurityRequirement(name = "bearer-key")
 @RequestMapping("/conversation")
 public class ConversationController {
 

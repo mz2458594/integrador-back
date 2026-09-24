@@ -21,7 +21,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/tag")
-@SecurityRequirement(name = "bearer-key")
 public class TagController {
 
     @Autowired

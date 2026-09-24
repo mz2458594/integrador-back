@@ -21,7 +21,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/user-step-progress")
-@SecurityRequirement(name = "bearer-key")
 public class UserStepProgressController {
 
     @Autowired

@@ -3,6 +3,7 @@ package com.integrador.rocket.roadmap.infra.security;
 import com.integrador.rocket.roadmap.repositories.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +40,32 @@ public class SecurityFilter extends OncePerRequestFilter {
     }
 
     private String recuperarToken(HttpServletRequest request){
-        var authorizationHeader = request.getHeader("Authorization");
-        if (authorizationHeader != null){
-            return authorizationHeader.replace("Bearer ", "");
+
+        // SERVICIO DE BEARER TOKEN
+        //        var authorizationHeader = request.getHeader("Authorization");
+//
+//        if (authorizationHeader != null){
+//            return authorizationHeader.replace("Bearer ", "");
+//        }
+//        return null;
+
+        // SERVICIO DE COOKIES
+
+        if (request.getCookies() == null){
+            return null;
         }
+
+        for (Cookie cookie: request.getCookies()){
+            if ("token".equals(cookie.getName())){
+                return cookie.getValue();
+            }
+        }
+
         return null;
+
+
+
+
     }
 
 }

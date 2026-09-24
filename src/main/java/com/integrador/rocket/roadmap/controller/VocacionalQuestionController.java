@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RequestMapping("/vocational-question")
-@SecurityRequirement(name = "bearer-key")
 @RestController
 public class VocacionalQuestionController {
 

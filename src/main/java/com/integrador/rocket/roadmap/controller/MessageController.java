@@ -27,7 +27,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/message")
-@SecurityRequirement(name = "bearer-key")
 public class MessageController {
 
     @Autowired

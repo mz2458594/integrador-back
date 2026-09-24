@@ -22,7 +22,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/step-resource")
-@SecurityRequirement(name = "bearer-key")
 public class StepResourceController {
 
     @Autowired

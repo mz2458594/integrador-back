@@ -21,7 +21,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/ai-interaction")
-@SecurityRequirement(name = "bearer-key")
 public class AiInteractionController {
 
     @Autowired
