@@ -1,6 +1,5 @@
 package com.integrador.rocket.roadmap.controller;
 
-import com.integrador.rocket.roadmap.infra.security.DatosTokenJWT;
 import com.integrador.rocket.roadmap.infra.security.TokenService;
 import com.integrador.rocket.roadmap.models.users.User;
 import com.integrador.rocket.roadmap.models.users.dto.UserAuthentication;
@@ -15,12 +14,10 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.Duration;
@@ -39,6 +36,14 @@ public class AuthenticationController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @GetMapping("/me")
+    public ResponseEntity<UserDetail> obtenerUsuarioActual(Authentication authentication){
+
+        User user = (User) authentication.getPrincipal();
+        return ResponseEntity.ok(new UserDetail(user));
+
+    }
 
     @PostMapping("/login")
     public ResponseEntity iniciarSesion(@RequestBody @Valid UserAuthentication user, HttpServletResponse response){
