@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> {
                     request.requestMatchers(HttpMethod.POST, "/login").permitAll();
+                    request.requestMatchers(HttpMethod.POST, "/logout").permitAll();
                     request.requestMatchers(HttpMethod.POST, "/register").permitAll();
                     request.requestMatchers("/actuator/health").permitAll();
                     request.requestMatchers(HttpMethod.POST, "/vocational-question").hasRole("ADMINISTRADOR");
