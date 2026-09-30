@@ -73,10 +73,10 @@ public class MessageController {
 
         if (conversation.getType() == ConversationType.AI_AGENT){
             String aiReply = aiService.generarRespuesta(conversation, messageRegister.content(), user.getId());
-            messageRepository.save(new Message(aiReply, conversation, null));
+            var aiMessage = messageRepository.save(new Message(aiReply, conversation, null));
+            messagingTemplate.convertAndSend("/topic/conversation/" + conversation.getId(), new MessageDetail(message));
         }
 
-        messagingTemplate.convertAndSend("/topic/conversations" + conversation.getId(), new MessageDetail(message));
 
         var uri = uriComponentsBuilder.path("/message/{id}").buildAndExpand(message.getId()).toUri();
 
@@ -98,7 +98,14 @@ public class MessageController {
 
     @Transactional
     @DeleteMapping("/{id}")
-    public ResponseEntity eliminarMensaje(@PathVariable Long id) {
+    public ResponseEntity eliminarMensaje(@PathVariable Long id, @AuthenticationPrincipal User user) {
+
+        var message = messageRepository.getReferenceById(id);
+
+        if (message.getUser() == null || !message.getUser().getId().equals(user.getId())){
+            throw new AccessDeniedException("No puedes eliminar un mensaje que no es tuyo");
+        }
+
         messageRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
