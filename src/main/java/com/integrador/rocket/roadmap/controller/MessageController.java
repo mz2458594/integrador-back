@@ -70,6 +70,7 @@ public class MessageController {
         }
 
         var message = messageRepository.save(new Message(messageRegister.content(), conversation, user));
+        messagingTemplate.convertAndSend("/topic/conversation/" + conversation.getId(), new MessageDetail(message));
 
         if (conversation.getType() == ConversationType.AI_AGENT){
             String aiReply = aiService.generarRespuesta(conversation, messageRegister.content(), user.getId());
