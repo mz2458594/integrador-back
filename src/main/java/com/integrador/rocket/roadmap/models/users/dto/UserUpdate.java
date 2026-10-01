@@ -6,6 +6,8 @@ public record UserUpdate(
         String name,
         String email,
         Role role,
-        String password
+        String password,
+        String university,
+        String biography
 ) {
 }

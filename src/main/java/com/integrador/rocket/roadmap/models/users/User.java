@@ -42,6 +42,7 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
     @Column(unique = true, nullable = false)
@@ -50,9 +51,14 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(nullable = false)
     private String password;
 
     private boolean isActive = true;
+
+    private String university;
+
+    private String biography;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -153,6 +159,14 @@ public class User implements UserDetails {
         }
         if (userUpdate.password() != null) {
             this.password = password;
+        }
+
+        if (userUpdate.university() != null) {
+            this.university = userUpdate.university();
+        }
+
+        if (userUpdate.biography() != null) {
+            this.biography = userUpdate.biography();
         }
     }
 
