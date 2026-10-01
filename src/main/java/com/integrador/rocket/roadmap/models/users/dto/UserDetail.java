@@ -11,7 +11,9 @@ public record UserDetail(
         //VERIFICAR SI ROLE SERA ENUM O NO
         Role role,
         LocalDateTime createadAt,
-        LocalDateTime updateAt
+        LocalDateTime updateAt,
+        String university,
+        String bio
 ) {
     public UserDetail(User user) {
         this(
@@ -19,7 +21,9 @@ public record UserDetail(
                 user.getEmail(),
                 user.getRole(),
                 user.getCreatedAt(),
-                user.getUpdatedAt()
+                user.getUpdatedAt(),
+                user.getUniversity(),
+                user.getBiography()
         );
     }
 }
