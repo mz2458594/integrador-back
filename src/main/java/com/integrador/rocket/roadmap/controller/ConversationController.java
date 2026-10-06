@@ -5,6 +5,7 @@ import com.integrador.rocket.roadmap.models.conversations.ConversationType;
 import com.integrador.rocket.roadmap.models.conversations.dto.ConversationDetail;
 import com.integrador.rocket.roadmap.models.conversations.dto.ConversationList;
 import com.integrador.rocket.roadmap.models.conversations.dto.ConversationRegister;
+import com.integrador.rocket.roadmap.models.conversations.dto.TypingStatus;
 import com.integrador.rocket.roadmap.models.users.User;
 import com.integrador.rocket.roadmap.repositories.ConversationRepository;
 import com.integrador.rocket.roadmap.repositories.UserRepository;
@@ -15,6 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +35,9 @@ public class ConversationController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @GetMapping
     public ResponseEntity<Page<ConversationList>> listarConversaciones(@PageableDefault(size = 10) Pageable pageable) {
@@ -51,18 +57,44 @@ public class ConversationController {
         return ResponseEntity.ok(new ConversationDetail(comment));
     }
 
+    @PostMapping("/{id}/typing")
+    public ResponseEntity<Void> actualizarEstadoEscritura(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long id,
+            @RequestBody @Valid TypingStatusRequest request
+    ) {
+        var conversation = conversationRepository.findById(id)
+                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("No se encontro la conversación"));
+        if (conversation.getParticipants().stream().noneMatch(participant -> participant.getId().equals(user.getId()))) {
+            throw new AccessDeniedException("No perteneces a esta conversación");
+        }
+
+        messagingTemplate.convertAndSend(
+                "/topic/conversation/" + id + "/typing",
+                new TypingStatus(id, user.getId(), user.getName(), request.typing())
+        );
+        return ResponseEntity.noContent().build();
+    }
+
 
     @Transactional
     @PostMapping
     public ResponseEntity<ConversationDetail> crearConversacion(@AuthenticationPrincipal User user, @RequestBody @Valid ConversationRegister conversationRegister, UriComponentsBuilder uriComponentsBuilder) {
 
         List<User> participants = new ArrayList<>();
-        participants.add(user);
 
-        var exists = conversationRepository.findDirectConversationBetween(user.getId(), conversationRegister.participantId());
+        if (conversationRegister.type() == ConversationType.AI_AGENT) {
+            var currentUser = userRepository.findByIdForUpdate(user.getId())
+                    .orElseThrow(() -> new RuntimeException("No se encontro el usuario autenticado"));
 
-        if (exists.isPresent()) {
-            return ResponseEntity.ok(new ConversationDetail(exists.get()));
+            var existingAiConversation = conversationRepository
+                    .findFirstByTypeAndParticipants_IdOrderByCreatedAtDesc(ConversationType.AI_AGENT, user.getId());
+
+            if (existingAiConversation.isPresent()) {
+                return ResponseEntity.ok(new ConversationDetail(existingAiConversation.get()));
+            }
+
+            participants.add(currentUser);
         }
 
         if (conversationRegister.type() == ConversationType.DIRECT) {
@@ -75,6 +107,15 @@ public class ConversationController {
                 throw new IllegalArgumentException("No puedes crear una conversación contigo mismo");
             }
 
+            var existingDirectConversation = conversationRepository.findDirectConversationBetween(
+                    user.getId(),
+                    conversationRegister.participantId()
+            );
+            if (existingDirectConversation.isPresent()) {
+                return ResponseEntity.ok(new ConversationDetail(existingDirectConversation.get()));
+            }
+
+            participants.add(user);
             var participant = userRepository.findById(conversationRegister.participantId()).orElseThrow(() -> new RuntimeException("No se encontro el usuario con este ID"));
             participants.add(participant);
         }
@@ -99,5 +140,8 @@ public class ConversationController {
     public ResponseEntity eliminarConversacion(@PathVariable Long id) {
         conversationRepository.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    public record TypingStatusRequest(boolean typing) {
     }
 }

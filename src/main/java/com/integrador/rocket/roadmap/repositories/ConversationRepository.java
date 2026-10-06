@@ -1,6 +1,7 @@
 package com.integrador.rocket.roadmap.repositories;
 
 import com.integrador.rocket.roadmap.models.conversations.Conversation;
+import com.integrador.rocket.roadmap.models.conversations.ConversationType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,6 +19,11 @@ public interface ConversationRepository extends JpaRepository<Conversation, Long
             AND SIZE(c.participants) = 2
             """)
     Optional<Conversation> findDirectConversationBetween(Long userId1, Long userId2);
+
+    Optional<Conversation> findFirstByTypeAndParticipants_IdOrderByCreatedAtDesc(
+            ConversationType type,
+            Long participantId
+    );
 
     @Query("""
             SELECT c FROM Conversation c

@@ -5,6 +5,7 @@ import com.integrador.rocket.roadmap.models.comments.Comment;
 import java.time.LocalDateTime;
 
 public record CommentDetail(
+        Long id,
         Long post_id,
         Long user_id,
         String content,
@@ -12,6 +13,7 @@ public record CommentDetail(
 ) {
     public CommentDetail(Comment comment) {
         this(
+                comment.getId(),
                 comment.getPost().getId(),
                 comment.getUser().getId(),
                 comment.getContent(),
