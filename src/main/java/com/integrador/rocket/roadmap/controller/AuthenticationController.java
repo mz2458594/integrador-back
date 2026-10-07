@@ -58,8 +58,8 @@ public class AuthenticationController {
 
         ResponseCookie cookie = ResponseCookie.from("token", token)
                 .httpOnly(true)
-                .secure(false)
-                .sameSite("Lax")
+                .secure(true)
+                .sameSite("None")
                 .path("/")
                 .maxAge(Duration.ofHours(2))
                 .build();
@@ -73,8 +73,8 @@ public class AuthenticationController {
     public ResponseEntity cerrarSesion(HttpServletResponse response){
         ResponseCookie cookie = ResponseCookie.from("token", "")
                 .httpOnly(true)
-                .secure(false)
-                .sameSite("Lax")
+                .secure(true)
+                .sameSite("None")
                 .path("/")
                 .maxAge(0)
                 .build();
