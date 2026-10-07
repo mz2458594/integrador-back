@@ -5,6 +5,8 @@ import com.integrador.rocket.roadmap.models.comments.Comment;
 import com.integrador.rocket.roadmap.models.conversations.Conversation;
 import com.integrador.rocket.roadmap.models.messages.Message;
 import com.integrador.rocket.roadmap.models.posts.Post;
+import com.integrador.rocket.roadmap.models.posts.PostView;
+import com.integrador.rocket.roadmap.models.posts.PostVote;
 import com.integrador.rocket.roadmap.models.roadmaps.Roadmap;
 import com.integrador.rocket.roadmap.models.userroadmaps.UserRoadmap;
 import com.integrador.rocket.roadmap.models.users.dto.UserRegister;
@@ -69,6 +71,12 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Post> posts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostVote> postVotes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostView> postViews = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();

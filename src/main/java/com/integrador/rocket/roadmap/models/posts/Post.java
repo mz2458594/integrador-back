@@ -38,6 +38,9 @@ public class Post {
 
     private Integer views = 0;
 
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private Integer votesCount = 0;
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -54,8 +57,14 @@ public class Post {
     )
     private List<Tag> tags = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostVote> votes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostView> recordedViews = new ArrayList<>();
 
     public Post(@Valid PostRegister postRegister, User user, List<Tag> tags) {
         this.title = postRegister.title();
@@ -64,6 +73,18 @@ public class Post {
         //VALIDAR LO DE TAGS
         this.tags = tags;
 
+    }
+
+    public void incrementViews() {
+        this.views = (this.views == null ? 0 : this.views) + 1;
+    }
+
+    public void incrementVotesCount() {
+        this.votesCount = (this.votesCount == null ? 0 : this.votesCount) + 1;
+    }
+
+    public void decrementVotesCount() {
+        this.votesCount = Math.max(0, (this.votesCount == null ? 0 : this.votesCount) - 1);
     }
 
 

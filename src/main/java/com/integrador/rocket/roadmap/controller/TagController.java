@@ -1,23 +1,28 @@
 package com.integrador.rocket.roadmap.controller;
 
 import com.integrador.rocket.roadmap.models.posts.dto.PostList;
+import com.integrador.rocket.roadmap.models.posts.Post;
 import com.integrador.rocket.roadmap.models.tags.Tag;
 import com.integrador.rocket.roadmap.models.tags.dto.TagDetail;
 import com.integrador.rocket.roadmap.models.tags.dto.TagList;
 import com.integrador.rocket.roadmap.models.tags.dto.TagRegister;
 import com.integrador.rocket.roadmap.models.tags.dto.TagUpdate;
+import com.integrador.rocket.roadmap.models.users.User;
 import com.integrador.rocket.roadmap.repositories.CommentRepository;
+import com.integrador.rocket.roadmap.repositories.PostVoteRepository;
 import com.integrador.rocket.roadmap.repositories.TagRepository;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/tag")
@@ -28,6 +33,17 @@ public class TagController {
 
     @Autowired
     private CommentRepository commentRepository;
+
+    @Autowired
+    private PostVoteRepository postVoteRepository;
+
+    private List<PostList> mapPosts(List<Post> posts, User user) {
+        return posts.stream().map(post -> new PostList(
+                post,
+                commentRepository.countByPostId(post.getId()),
+                postVoteRepository.existsByPostIdAndUserId(post.getId(), user.getId())
+        )).toList();
+    }
 
     @GetMapping
     public ResponseEntity<Page<TagList>> listarTags(@PageableDefault(size = 10) Pageable pageable) {
@@ -42,19 +58,23 @@ public class TagController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TagDetail> detalleTag(@PathVariable Long id) {
+    public ResponseEntity<TagDetail> detalleTag(@AuthenticationPrincipal User user, @PathVariable Long id) {
         var tag = tagRepository.getReferenceById(id);
-        var post = tag.getPosts().stream().map(p -> new PostList(p, commentRepository.countByPostId(p.getId()))).toList();
+        var post = mapPosts(tag.getPosts(), user);
         return ResponseEntity.ok(new TagDetail(tag, post));
     }
 
     @Transactional
     @PostMapping
-    public ResponseEntity<TagDetail> crearStepResource(@RequestBody @Valid TagRegister tagRegister, UriComponentsBuilder uriComponentsBuilder) {
+    public ResponseEntity<TagDetail> crearStepResource(
+            @AuthenticationPrincipal User user,
+            @RequestBody @Valid TagRegister tagRegister,
+            UriComponentsBuilder uriComponentsBuilder
+    ) {
 
 
         var tag = tagRepository.save(new Tag(tagRegister));
-        var posts = tag.getPosts().stream().map(p -> new PostList(p, commentRepository.countByPostId(p.getId()))).toList();
+        var posts = mapPosts(tag.getPosts(), user);
 
         var uri = uriComponentsBuilder.path("/tag/{id}").buildAndExpand(tag.getId()).toUri();
 
@@ -63,13 +83,17 @@ public class TagController {
 
     @Transactional
     @PutMapping("/{id}")
-    public ResponseEntity<TagDetail> actualizarTag(@RequestBody TagUpdate tagUpdate, @PathVariable Long id) {
+    public ResponseEntity<TagDetail> actualizarTag(
+            @AuthenticationPrincipal User user,
+            @RequestBody TagUpdate tagUpdate,
+            @PathVariable Long id
+    ) {
 
         var tag = tagRepository.getReferenceById(id);
 
         tag.actualizar(tagUpdate);
 
-        var posts = tag.getPosts().stream().map(p -> new PostList(p, commentRepository.countByPostId(p.getId()))).toList();
+        var posts = mapPosts(tag.getPosts(), user);
 
         return ResponseEntity.ok(new TagDetail(tag, posts));
     }

@@ -14,6 +14,8 @@ public record PostList(
         String title,
         String content,
         Integer views,
+        Integer votesCount,
+        boolean votedByCurrentUser,
         LocalDateTime createdAt,
         Long userId,
         List<TagList> tags,
@@ -23,11 +25,17 @@ public record PostList(
         Long commentsCount
 ) {
     public PostList(Post post, Long commentsCount) {
+        this(post, commentsCount, false);
+    }
+
+    public PostList(Post post, Long commentsCount, boolean votedByCurrentUser) {
         this(
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
                 post.getViews(),
+                post.getVotesCount(),
+                votedByCurrentUser,
                 post.getCreatedAt(),
                 post.getUser().getId(),
                 post.getTags().stream().map(TagList::new).toList(),

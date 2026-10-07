@@ -12,17 +12,25 @@ public record PostDetail(
         String title,
         String content,
         Integer views,
+        Integer votesCount,
+        boolean votedByCurrentUser,
         LocalDateTime createdAt,
         UserDetail user,
         List<TagList> tags,
         List<CommentDetail> comments
 ) {
     public PostDetail(Post post){
+        this(post, false);
+    }
+
+    public PostDetail(Post post, boolean votedByCurrentUser){
         this(
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
                 post.getViews(),
+                post.getVotesCount(),
+                votedByCurrentUser,
                 post.getCreatedAt(),
                 new UserDetail(post.getUser()),
                 post.getTags().stream().map(TagList::new).toList(),
