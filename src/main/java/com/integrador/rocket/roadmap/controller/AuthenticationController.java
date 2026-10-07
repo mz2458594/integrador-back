@@ -6,6 +6,7 @@ import com.integrador.rocket.roadmap.models.users.dto.UserAuthentication;
 import com.integrador.rocket.roadmap.models.users.dto.UserDetail;
 import com.integrador.rocket.roadmap.models.users.dto.UserRegister;
 import com.integrador.rocket.roadmap.repositories.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -46,8 +49,9 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity iniciarSesion(@RequestBody @Valid UserAuthentication user, HttpServletResponse response){
+    public ResponseEntity iniciarSesion(@RequestBody @Valid UserAuthentication user, HttpServletRequest request, HttpServletResponse response){
         var authenticationToken = new UsernamePasswordAuthenticationToken(user.email(), user.password());
+        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         var authentication = authenticationManager.authenticate(authenticationToken);
 
         var token = tokenService.generarToken((User) authentication.getPrincipal());
