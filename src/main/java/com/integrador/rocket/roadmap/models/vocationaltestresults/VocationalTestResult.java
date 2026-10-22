@@ -2,10 +2,7 @@ package com.integrador.rocket.roadmap.models.vocationaltestresults;
 
 import com.integrador.rocket.roadmap.models.users.User;
 import com.integrador.rocket.roadmap.models.vocationalOption.VocationalOption;
-import com.integrador.rocket.roadmap.models.vocationalOption.dto.VocationalOptionUpdate;
-import com.integrador.rocket.roadmap.models.vocationaltestresults.dto.VocationalTestResultRegister;
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,6 +30,10 @@ public class VocationalTestResult {
 
     private String suggestedCareer;
 
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private List<com.integrador.rocket.roadmap.models.vocationaltestresults.dto.CareerScore> careerRanking = new ArrayList<>();
+
     @CreatedDate
     private LocalDateTime completedAt;
 
@@ -45,17 +46,12 @@ public class VocationalTestResult {
     private List<VocationalOption> vocationalOptions = new ArrayList<>();
 
 
-    public VocationalTestResult(@Valid VocationalTestResultRegister vocationalTestResultRegister, List<VocationalOption> vocationalOptions, User user) {
-
+    public VocationalTestResult(User user, com.integrador.rocket.roadmap.services.VocationalScoringService.Evaluation evaluation) {
         this.user = user;
-        this.suggestedCareer = vocationalTestResultRegister.suggestedCareer();
-        this.vocationalOptions = vocationalOptions;
+        this.suggestedCareer = evaluation.suggestedCareer();
+        this.careerRanking = evaluation.ranking();
+        this.vocationalOptions = evaluation.answers();
+        this.completedAt = LocalDateTime.now();
     }
 
-
-    public void actualizar(VocationalTestResult vocationalTestResult) {
-        if (vocationalTestResult.suggestedCareer != null) {
-            this.suggestedCareer = vocationalTestResult.suggestedCareer;
-        }
-    }
 }

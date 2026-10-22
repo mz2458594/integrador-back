@@ -26,6 +26,7 @@ public class VocationalQuestion {
     private String text;
 //    private Integer orderIndex = 0;
 
+    @OrderBy("id ASC")
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private List<VocationalOption> vocationalOptions = new ArrayList<>();
 

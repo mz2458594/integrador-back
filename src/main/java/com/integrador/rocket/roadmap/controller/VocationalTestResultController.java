@@ -1,87 +1,58 @@
 package com.integrador.rocket.roadmap.controller;
 
 import com.integrador.rocket.roadmap.models.users.User;
-import com.integrador.rocket.roadmap.models.vocationalOption.VocationalOption;
 import com.integrador.rocket.roadmap.models.vocationaltestresults.VocationalTestResult;
-import com.integrador.rocket.roadmap.models.vocationaltestresults.dto.VocationalTestResultDetail;
-import com.integrador.rocket.roadmap.models.vocationaltestresults.dto.VocationalTestResultList;
-import com.integrador.rocket.roadmap.models.vocationaltestresults.dto.VocationalTestResultRegister;
-import com.integrador.rocket.roadmap.models.vocationaltestresults.dto.VocationalTestResultUpdate;
-import com.integrador.rocket.roadmap.repositories.VocationalOptionRepository;
+import com.integrador.rocket.roadmap.models.vocationaltestresults.dto.*;
+import com.integrador.rocket.roadmap.repositories.VocationalQuestionRepository;
 import com.integrador.rocket.roadmap.repositories.VocationalTestResultRepository;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import com.integrador.rocket.roadmap.services.VocationalScoringService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.util.ArrayList;
-import java.util.List;
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("/vocational-test-result")
+@Transactional(readOnly = true)
 public class VocationalTestResultController {
-
-    @Autowired
-    private VocationalOptionRepository vocationalOptionRepository;
-
-    @Autowired
-    private VocationalTestResultRepository vocationalTestResultRepository;
-
+    private final VocationalQuestionRepository questions;
+    private final VocationalTestResultRepository results;
+    private final VocationalScoringService scoring;
+    public VocationalTestResultController(VocationalQuestionRepository questions, VocationalTestResultRepository results, VocationalScoringService scoring) {
+        this.questions = questions; this.results = results; this.scoring = scoring;
+    }
+    @GetMapping("/me")
+    public ResponseEntity<VocationalTestResultDetail> current(@AuthenticationPrincipal User user) {
+        return results.findByUserId(user.getId()).map(result -> ResponseEntity.ok(new VocationalTestResultDetail(result)))
+            .orElseGet(() -> ResponseEntity.noContent().build());
+    }
     @GetMapping
-    public ResponseEntity<Page<VocationalTestResultList>> listarVocationalResults(@PageableDefault(size = 10) Pageable pageable) {
-        var vocationalTestResultList = vocationalTestResultRepository.findAll(pageable).map(VocationalTestResultList::new);
-        return ResponseEntity.ok(vocationalTestResultList);
+    public ResponseEntity<Page<VocationalTestResultList>> list(@AuthenticationPrincipal User user, Pageable pageable) {
+        return ResponseEntity.ok(results.findAllByUserId(user.getId(), pageable).map(VocationalTestResultList::new));
     }
-
     @GetMapping("/{id}")
-    public ResponseEntity<VocationalTestResultDetail> detalleVocationalResult(@PathVariable Long id) {
-        var vocationalTestResult = vocationalTestResultRepository.getReferenceById(id);
-        return ResponseEntity.ok(new VocationalTestResultDetail(vocationalTestResult));
+    public ResponseEntity<VocationalTestResultDetail> detail(@AuthenticationPrincipal User user, @PathVariable Long id) {
+        var result = results.findById(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+        if (!result.getUser().getId().equals(user.getId())) throw new ResponseStatusException(FORBIDDEN);
+        return ResponseEntity.ok(new VocationalTestResultDetail(result));
     }
-
-    @Transactional
     @PostMapping
-    public ResponseEntity<VocationalTestResultDetail> crearVocationalResult(@AuthenticationPrincipal User user, @RequestBody @Valid VocationalTestResultRegister vocationalTestResultRegister, UriComponentsBuilder uriComponentsBuilder) {
-
-        List<VocationalOption> vocationalOptions = new ArrayList<>();
-        if (vocationalTestResultRegister.vocacionalOptionIds() != null) {
-            for (Long id : vocationalTestResultRegister.vocacionalOptionIds()) {
-                var option = vocationalOptionRepository.getReferenceById(id);
-                vocationalOptions.add(option);
-            }
-        }
-
-        var vocationalTestResult = vocationalTestResultRepository.save(new VocationalTestResult(vocationalTestResultRegister, vocationalOptions, user));
-
-        var uri = uriComponentsBuilder.path("/vocational-test-result/{id}").buildAndExpand(vocationalTestResult.getId()).toUri();
-
-        return ResponseEntity.created(uri).body(new VocationalTestResultDetail(vocationalTestResult));
-    }
-
     @Transactional
-    @PutMapping("/{id}")
-    public ResponseEntity<VocationalTestResultDetail> actualizarVocationalResult(@RequestBody VocationalTestResultUpdate vocationalTestResultUpdate, @PathVariable Long id) {
-
-        var vocationalTestResult = vocationalTestResultRepository.getReferenceById(id);
-
-        vocationalTestResult.actualizar(vocationalTestResult);
-
-        return ResponseEntity.ok(new VocationalTestResultDetail(vocationalTestResult));
+    public ResponseEntity<VocationalTestResultDetail> create(@AuthenticationPrincipal User user,
+            @RequestBody @Valid VocationalTestResultRegister request, UriComponentsBuilder builder) {
+        if (results.findByUserId(user.getId()).isPresent())
+            throw new ResponseStatusException(CONFLICT, "Ya completaste el test vocacional.");
+        var evaluation = scoring.evaluate(questions.findAll(Sort.by("id")), request.vocacionalOptionIds());
+        var result = results.saveAndFlush(new VocationalTestResult(user, evaluation));
+        return ResponseEntity.created(builder.path("/vocational-test-result/{id}").buildAndExpand(result.getId()).toUri())
+            .body(new VocationalTestResultDetail(result));
     }
-
-    @Transactional
-    @DeleteMapping("/{id}")
-    public ResponseEntity eliminarVocationalResults(@PathVariable Long id) {
-        vocationalTestResultRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }
-
-
+    // Results are immutable: no client may overwrite the calculated career or remove completion.
 }

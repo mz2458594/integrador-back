@@ -20,7 +20,9 @@ public record VocationalTestResultDetail(
 
         LocalDateTime completedAt,
 
-        List<VocationalOptionDetail> vocacionalOptions
+        List<VocationalOptionDetail> vocacionalOptions,
+
+        List<CareerScore> ranking
 
 ) {
     public VocationalTestResultDetail(VocationalTestResult vocationalTestResult) {
@@ -29,7 +31,8 @@ public record VocationalTestResultDetail(
                 vocationalTestResult.getUser().getId(),
                 vocationalTestResult.getSuggestedCareer(),
                 vocationalTestResult.getCompletedAt(),
-                vocationalTestResult.getVocationalOptions().stream().map(VocationalOptionDetail::new).toList()
+                vocationalTestResult.getVocationalOptions().stream().map(VocationalOptionDetail::new).toList(),
+                vocationalTestResult.getCareerRanking() == null ? List.of() : vocationalTestResult.getCareerRanking()
         );
     }
 }
