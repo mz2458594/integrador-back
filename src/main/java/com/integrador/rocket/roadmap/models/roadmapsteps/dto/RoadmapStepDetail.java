@@ -25,8 +25,18 @@ public record RoadmapStepDetail(
 
         List<StepResourcesDetail> stepResources,
 
-        List<UserStepProgressDetail> userStepProgresses
+        List<UserStepProgressDetail> userStepProgresses,
+
+        Double x,
+
+        Double y
 ) {
+    // Keep existing Java callers compatible with the previous signature.
+    public RoadmapStepDetail(Long id, String title, String description, int orderIndex, Long roadmapId,
+                             List<StepResourcesDetail> stepResources, List<UserStepProgressDetail> userStepProgresses) {
+        this(id, title, description, orderIndex, roadmapId, stepResources, userStepProgresses, null, null);
+    }
+
 
     public RoadmapStepDetail(RoadmapStep roadmapStep) {
         this(
@@ -36,7 +46,9 @@ public record RoadmapStepDetail(
                 roadmapStep.getOrderIndex(),
                 roadmapStep.getRoadmap().getId(),
                 roadmapStep.getStepResources().stream().map(StepResourcesDetail::new).toList(),
-                roadmapStep.getUserStepProgresses().stream().map(UserStepProgressDetail::new).toList()
+                roadmapStep.getUserStepProgresses().stream().map(UserStepProgressDetail::new).toList(),
+                roadmapStep.getX(),
+                roadmapStep.getY()
         );
     }
 

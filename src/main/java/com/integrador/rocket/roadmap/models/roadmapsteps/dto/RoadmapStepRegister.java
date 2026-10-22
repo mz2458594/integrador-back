@@ -15,8 +15,17 @@ public record RoadmapStepRegister(
 
         @NotNull int orderIndex,
 
-        @NotNull Long roadmapId
+        @NotNull Long roadmapId,
+
+        Double x,
+
+        Double y
 
 
 ) {
+    // Keep existing Java callers compatible with the previous signature.
+    public RoadmapStepRegister(String title, String description, int orderIndex, Long roadmapId) {
+        this(title, description, orderIndex, roadmapId, null, null);
+    }
+
 }

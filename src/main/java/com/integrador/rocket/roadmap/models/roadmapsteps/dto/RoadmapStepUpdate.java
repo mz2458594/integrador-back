@@ -8,7 +8,16 @@ public record RoadmapStepUpdate(
 
         String description,
 
-        Integer orderIndex
+        Integer orderIndex,
+
+        Double x,
+
+        Double y
 
 ) {
+    // Keep existing Java callers compatible with the previous signature.
+    public RoadmapStepUpdate(String title, String description, Integer orderIndex) {
+        this(title, description, orderIndex, null, null);
+    }
+
 }

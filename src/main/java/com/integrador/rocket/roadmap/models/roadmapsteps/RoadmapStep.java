@@ -8,6 +8,7 @@ import com.integrador.rocket.roadmap.models.users.User;
 import com.integrador.rocket.roadmap.models.userstepprogress.UserStepProgress;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +35,13 @@ public class RoadmapStep {
 
     private Integer orderIndex;
 
+    // Nullable for steps created before coordinate support.
+    @Column(name = "x")
+    private Double x;
+
+    @Column(name = "y")
+    private Double y;
+
     @ManyToOne
     @JoinColumn(name = "roadmap_id")
     private Roadmap roadmap;
@@ -44,7 +52,22 @@ public class RoadmapStep {
     @OneToMany(mappedBy = "roadmapStep", cascade = CascadeType.ALL)
     private List<UserStepProgress> userStepProgresses = new ArrayList<>();
 
+    public RoadmapStep(Long id, String title, String description, Integer orderIndex,
+                       Roadmap roadmap, List<StepResource> stepResources,
+                       List<UserStepProgress> userStepProgresses) {
+        this(id, title, description, orderIndex, null, null, roadmap, stepResources, userStepProgresses);
+    }
+
+    private static void validateCoordinates(Double x, Double y) {
+        if ((x != null && !Double.isFinite(x)) || (y != null && !Double.isFinite(y))) {
+            throw new ValidationException("Las coordenadas x e y deben ser numeros finitos");
+        }
+    }
+
     public RoadmapStep(@Valid RoadmapStepRegister roadmapStepRegister, Roadmap roadmap) {
+        validateCoordinates(roadmapStepRegister.x(), roadmapStepRegister.y());
+        this.x = roadmapStepRegister.x();
+        this.y = roadmapStepRegister.y();
         this.title = roadmapStepRegister.title();
         this.description = roadmapStepRegister.description();
         this.orderIndex = roadmapStepRegister.orderIndex();
@@ -52,6 +75,13 @@ public class RoadmapStep {
     }
 
     public void actualizar(RoadmapStepUpdate roadmapStepUpdate) {
+        validateCoordinates(roadmapStepUpdate.x(), roadmapStepUpdate.y());
+        if (roadmapStepUpdate.x() != null) {
+            this.x = roadmapStepUpdate.x();
+        }
+        if (roadmapStepUpdate.y() != null) {
+            this.y = roadmapStepUpdate.y();
+        }
         if (roadmapStepUpdate.title() != null){
             this.title = roadmapStepUpdate.title();
         }

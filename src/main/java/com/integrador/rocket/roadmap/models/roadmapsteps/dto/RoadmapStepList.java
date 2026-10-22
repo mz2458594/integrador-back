@@ -16,8 +16,17 @@ public record RoadmapStepList(
 
         int orderIndex,
 
-        Long roadmapId
+        Long roadmapId,
+
+        Double x,
+
+        Double y
 ) {
+    // Keep existing Java callers compatible with the previous signature.
+    public RoadmapStepList(Long id, String title, String description, int orderIndex, Long roadmapId) {
+        this(id, title, description, orderIndex, roadmapId, null, null);
+    }
+
 
     public RoadmapStepList(RoadmapStep roadmapStep) {
         this(
@@ -25,7 +34,9 @@ public record RoadmapStepList(
                 roadmapStep.getTitle(),
                 roadmapStep.getDescription(),
                 roadmapStep.getOrderIndex(),
-                roadmapStep.getRoadmap().getId()
+                roadmapStep.getRoadmap().getId(),
+                roadmapStep.getX(),
+                roadmapStep.getY()
         );
     }
 }
