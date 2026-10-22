@@ -7,6 +7,7 @@ import com.integrador.rocket.roadmap.models.messages.dto.MessageList;
 import com.integrador.rocket.roadmap.models.messages.dto.MessageRegister;
 import com.integrador.rocket.roadmap.models.messages.dto.MessageUpdate;
 import com.integrador.rocket.roadmap.models.users.User;
+import com.integrador.rocket.roadmap.services.VocationalAccessService;
 import com.integrador.rocket.roadmap.repositories.ConversationRepository;
 import com.integrador.rocket.roadmap.repositories.MessageRepository;
 import com.integrador.rocket.roadmap.services.AiService;
@@ -28,6 +29,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequestMapping("/message")
 public class MessageController {
+
+    @Autowired
+    private VocationalAccessService vocationalAccessService;
 
     @Autowired
     private MessageRepository messageRepository;
@@ -63,6 +67,7 @@ public class MessageController {
     @PostMapping
     public ResponseEntity<MessageDetail> crearMensaje(@AuthenticationPrincipal User user, @RequestBody @Valid MessageRegister messageRegister, UriComponentsBuilder uriComponentsBuilder) {
 
+        vocationalAccessService.requireCompletedTest(user.getId());
         var conversation = conversationRepository.getReferenceById(messageRegister.conversation_id());
 
         if (!conversation.getParticipants().contains(user)){
@@ -86,12 +91,16 @@ public class MessageController {
 
     @Transactional
     @PutMapping("/{id}")
-    public ResponseEntity<MessageDetail> actualizarMensaje(@RequestBody MessageUpdate messageUpdate, @PathVariable Long id) {
+    public ResponseEntity<MessageDetail> actualizarMensaje(@RequestBody MessageUpdate messageUpdate, @PathVariable Long id, @AuthenticationPrincipal User user) {
 
         // Añadir regla de 1 min para editar el mensaje
         var message = messageRepository.getReferenceById(id);
         if (message.getConversation().getType() == ConversationType.AI_AGENT){
             throw new AccessDeniedException("No se puede editar el mensaje en conversaciones con el Agente IA");
+        }
+        vocationalAccessService.requireCompletedTest(user.getId());
+        if (message.getUser() == null || !message.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("No puedes editar un mensaje que no es tuyo");
         }
         message.actualizar(messageUpdate);
         return ResponseEntity.ok(new MessageDetail(message));

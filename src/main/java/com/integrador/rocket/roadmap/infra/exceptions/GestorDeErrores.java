@@ -29,6 +29,11 @@ public class GestorDeErrores {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorApi("Credenciales inválidas"));
     }
 
+    @ExceptionHandler(VocationalTestRequiredException.class)
+    public ResponseEntity<ErrorApi> testVocacionalRequerido(VocationalTestRequiredException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorApi(ex.getMessage()));
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity accesoDenegado(AccessDeniedException e, HttpServletRequest request) {
         var auth = SecurityContextHolder.getContext().getAuthentication();

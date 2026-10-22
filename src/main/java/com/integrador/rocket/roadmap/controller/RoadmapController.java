@@ -6,6 +6,7 @@ import com.integrador.rocket.roadmap.models.roadmaps.dto.RoadmapList;
 import com.integrador.rocket.roadmap.models.roadmaps.dto.RoadmapRegister;
 import com.integrador.rocket.roadmap.models.roadmaps.dto.RoadmapUpdate;
 import com.integrador.rocket.roadmap.models.users.User;
+import com.integrador.rocket.roadmap.services.VocationalAccessService;
 import com.integrador.rocket.roadmap.repositories.RoadmapRepository;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -22,6 +23,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequestMapping("/roadmap")
 public class RoadmapController {
+
+    @Autowired
+    private VocationalAccessService vocationalAccessService;
 
     @Autowired
     private RoadmapRepository roadmapRepository;
@@ -48,6 +52,7 @@ public class RoadmapController {
     @PostMapping
     public ResponseEntity<RoadmapDetail> crearRoadmap(@AuthenticationPrincipal User user, @RequestBody @Valid RoadmapRegister roadmapRegister, UriComponentsBuilder uriComponentsBuilder) {
 
+        vocationalAccessService.requireCompletedTest(user.getId());
         var message = roadmapRepository.save(new Roadmap(roadmapRegister, user));
 
         var uri = uriComponentsBuilder.path("/roadmap/{id}").buildAndExpand(message.getId()).toUri();

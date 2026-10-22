@@ -6,6 +6,7 @@ import com.integrador.rocket.roadmap.models.ai.dto.AiList;
 import com.integrador.rocket.roadmap.models.ai.dto.AiRegister;
 import com.integrador.rocket.roadmap.models.ai.dto.AiUpdate;
 import com.integrador.rocket.roadmap.models.users.User;
+import com.integrador.rocket.roadmap.services.VocationalAccessService;
 import com.integrador.rocket.roadmap.repositories.AiRepository;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -22,6 +23,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequestMapping("/ai-interaction")
 public class AiInteractionController {
+
+    @Autowired
+    private VocationalAccessService vocationalAccessService;
 
     @Autowired
     private AiRepository aiRepository;
@@ -41,6 +45,9 @@ public class AiInteractionController {
     @Transactional
     @PostMapping
     public ResponseEntity<AiDetail> crearInteraccion(@AuthenticationPrincipal User user, @RequestBody @Valid AiRegister aiRegister, UriComponentsBuilder uriComponentsBuilder) {
+        if (aiRegister.purpose() == com.integrador.rocket.roadmap.models.ai.AiPurpose.ROADMAP_CREATION) {
+            vocationalAccessService.requireCompletedTest(user.getId());
+        }
         var aiInteraction = aiRepository.save(new AiInteraction(aiRegister, user));
 
         var uri = uriComponentsBuilder.path("/ai-interaction/{id}").buildAndExpand(aiInteraction.getId()).toUri();

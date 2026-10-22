@@ -7,6 +7,7 @@ import com.integrador.rocket.roadmap.models.conversations.dto.ConversationList;
 import com.integrador.rocket.roadmap.models.conversations.dto.ConversationRegister;
 import com.integrador.rocket.roadmap.models.conversations.dto.TypingStatus;
 import com.integrador.rocket.roadmap.models.users.User;
+import com.integrador.rocket.roadmap.services.VocationalAccessService;
 import com.integrador.rocket.roadmap.repositories.ConversationRepository;
 import com.integrador.rocket.roadmap.repositories.UserRepository;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -29,6 +30,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/conversation")
 public class ConversationController {
+
+    @Autowired
+    private VocationalAccessService vocationalAccessService;
 
     @Autowired
     private ConversationRepository conversationRepository;
@@ -63,6 +67,7 @@ public class ConversationController {
             @PathVariable Long id,
             @RequestBody @Valid TypingStatusRequest request
     ) {
+        vocationalAccessService.requireCompletedTest(user.getId());
         var conversation = conversationRepository.findById(id)
                 .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("No se encontro la conversación"));
         if (conversation.getParticipants().stream().noneMatch(participant -> participant.getId().equals(user.getId()))) {
@@ -98,6 +103,7 @@ public class ConversationController {
         }
 
         if (conversationRegister.type() == ConversationType.DIRECT) {
+            vocationalAccessService.requireCompletedTest(user.getId());
 
             if (conversationRegister.participantId() == null){
                 throw new IllegalArgumentException("Una conversación directa require de un participante");

@@ -1,6 +1,7 @@
 package com.integrador.rocket.roadmap.services;
 
 import com.integrador.rocket.roadmap.models.conversations.Conversation;
+import com.integrador.rocket.roadmap.infra.exceptions.VocationalTestRequiredException;
 import com.integrador.rocket.roadmap.models.messages.Message;
 import com.integrador.rocket.roadmap.repositories.MessageRepository;
 import com.integrador.rocket.roadmap.repositories.VocationalTestResultRepository;
@@ -8,8 +9,9 @@ import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,12 +33,14 @@ public class AiService {
 
     public String generarRespuesta(Conversation conversation, String content, Long userId) {
 
-        String vocationalContext = vocationalTestResultRepository.findByUserId(userId)
-                .map(result -> "Carrera sugerida por su test vocacional: " + result.getSuggestedCareer())
-                .orElse("El estudiante no ha completado su test vocacional")
-                ;
+        var result = vocationalTestResultRepository.findByUserId(userId)
+                .orElseThrow(VocationalTestRequiredException::new);
+        String vocationalContext = "Carrera sugerida por su test vocacional: " + result.getSuggestedCareer();
 
-        List<Message> previous_messages = messageRepository.findAllByConversationId(PageRequest.of(0, 20, Sort.by("createdAt")),conversation.getId()).getContent();
+        List<Message> previous_messages = new ArrayList<>(messageRepository.findAllByConversationId(
+                PageRequest.of(0, 20, Sort.by(Sort.Order.desc("createdAt"), Sort.Order.desc("id"))),
+                conversation.getId()).getContent());
+        Collections.reverse(previous_messages);
 
         String history = previous_messages.stream()
                 .map(m -> (m.isFromAgent() ? "Agente: " : "Estudiante: ") + m.getContent())
@@ -54,10 +58,9 @@ public class AiService {
                 - Si el resultado del test vocacional está disponible en el contexto, úsalo\s
                   como base principal para orientar el roadmap (áreas de afinidad, fortalezas,\s
                   intereses detectados).
-                - Si el resultado del test no ha sido compartido en la conversación, pídelo\s
-                  explícitamente antes de generar el roadmap ("¿Podrías compartirme el\s
-                  resultado de tu test vocacional?"), en lugar de sugerir que lo realice.
-                
+                - El resultado del test se proporciona en DATOS DEL ESTUDIANTE.
+                  No pidas que lo vuelva a compartir ni inventes resultados adicionales.
+
                 ## Contexto adicional que debes recopilar
                 Si el estudiante no lo ha proporcionado, pregunta por:
                 - Tema, habilidad o carrera objetivo (puede derivarse del resultado del test)
@@ -97,7 +100,7 @@ public class AiService {
                 
                 """.formatted(prompt, vocationalContext , history, content);
 
-        return chatModel.call(prompt);
+        return chatModel.call(fullPrompt);
     }
 
 }
