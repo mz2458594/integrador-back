@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 
 public record UserAuthentication(
         @Email @NotBlank String email,
-        @NotBlank String password
+        @NotBlank String password,
+        boolean rememberMe
 ) {
 }

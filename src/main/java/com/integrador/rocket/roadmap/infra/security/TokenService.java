@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import com.auth0.jwt.algorithms.Algorithm;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.Duration;
+
 
 
 @Service
@@ -22,20 +22,20 @@ public class TokenService {
 
 
     public String generarToken(User user) {
+        return generarToken(user, Duration.ofHours(2));
+    }
+
+    public String generarToken(User user, Duration lifetime) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.create()
                     .withIssuer("MZP")
                     .withSubject(user.getEmail())
-                    .withExpiresAt(fechaExpiracion())
+                    .withExpiresAt(Instant.now().plus(lifetime))
                     .sign(algorithm);
         } catch (JWTCreationException ex) {
             throw new RuntimeException("Error al generar el token " + ex);
         }
-    }
-
-    private Instant fechaExpiracion() {
-        return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-05:00"));
     }
 
     public String getSubject(String tokenJwt) {

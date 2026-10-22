@@ -54,15 +54,18 @@ public class AuthenticationController {
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         var authentication = authenticationManager.authenticate(authenticationToken);
 
-        var token = tokenService.generarToken((User) authentication.getPrincipal());
+        var lifetime = user.rememberMe() ? Duration.ofDays(7) : Duration.ofHours(2);
+        var token = tokenService.generarToken((User) authentication.getPrincipal(), lifetime);
 
-        ResponseCookie cookie = ResponseCookie.from("token", token)
+        ResponseCookie.ResponseCookieBuilder cookieBuilder = ResponseCookie.from("token", token)
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")
-                .path("/")
-                .maxAge(Duration.ofHours(2))
-                .build();
+                .path("/");
+        if (user.rememberMe()) {
+            cookieBuilder.maxAge(lifetime);
+        }
+        ResponseCookie cookie = cookieBuilder.build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
