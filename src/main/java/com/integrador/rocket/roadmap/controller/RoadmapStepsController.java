@@ -28,6 +28,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class RoadmapStepsController {
 
     @Autowired
+    private com.integrador.rocket.roadmap.services.RoadmapGraphService graphService;
+
+    @Autowired
     private RoadmapRepository roadmapRepository;
 
     @Autowired
@@ -90,6 +93,7 @@ public class RoadmapStepsController {
     public ResponseEntity eliminarRoadmapStep(@AuthenticationPrincipal User user, @PathVariable Long id) {
         var step = roadmapStepsRepository.getReferenceById(id);
         requireOwner(step.getRoadmap(), user);
+        graphService.removeStep(step);
         roadmapStepsRepository.delete(step);
         return ResponseEntity.noContent().build();
     }

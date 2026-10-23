@@ -56,7 +56,9 @@ class RoadmapManagementControllerTest {
         var controller = new RoadmapController();
         ReflectionTestUtils.setField(controller, "roadmapRepository", roadmaps);
         ReflectionTestUtils.setField(controller, "vocationalAccessService", mock(VocationalAccessService.class));
+        ReflectionTestUtils.setField(controller,"graphService",mock(com.integrador.rocket.roadmap.services.RoadmapGraphService.class));
         var stepController = new RoadmapStepsController();
+        ReflectionTestUtils.setField(stepController,"graphService",mock(com.integrador.rocket.roadmap.services.RoadmapGraphService.class));
         ReflectionTestUtils.setField(stepController, "roadmapRepository", roadmaps);
         ReflectionTestUtils.setField(stepController, "roadmapStepsRepository", steps);
         mvc = MockMvcBuilders.standaloneSetup(controller, stepController).setControllerAdvice(new GestorDeErrores())

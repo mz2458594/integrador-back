@@ -26,6 +26,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class RoadmapController {
 
     @Autowired
+    private com.integrador.rocket.roadmap.services.RoadmapGraphService graphService;
+
+    @Autowired
     private VocationalAccessService vocationalAccessService;
 
     @Autowired
@@ -56,6 +59,8 @@ public class RoadmapController {
         vocationalAccessService.requireCompletedTest(user.getId());
         var message = roadmapRepository.save(new Roadmap(roadmapRegister, user));
 
+        if (roadmapRegister.connections() != null) graphService.initial(message,roadmapRegister.connections());
+
         var uri = uriComponentsBuilder.path("/roadmap/{id}").buildAndExpand(message.getId()).toUri();
 
         return ResponseEntity.created(uri).body(new RoadmapDetail(message));
@@ -78,6 +83,7 @@ public class RoadmapController {
     public ResponseEntity eliminarRoadmap(@AuthenticationPrincipal User user, @PathVariable Long id) {
         var roadmap = roadmapRepository.getReferenceById(id);
         requireOwner(roadmap, user);
+        graphService.removeRoadmap(id);
         roadmapRepository.delete(roadmap);
         return ResponseEntity.noContent().build();
     }

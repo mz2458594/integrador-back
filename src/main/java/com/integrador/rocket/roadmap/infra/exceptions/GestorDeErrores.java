@@ -65,7 +65,15 @@ public class GestorDeErrores {
     //PARA FALLA EN LOS CAMPOS UNICOS EN SQL
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity errorDatosDuplicados(DataIntegrityViolationException ex) {
-        log.warn("Violacion de seguridad : {}", ex.getMostSpecificCause().getMessage());
+        var cause = ex.getMostSpecificCause();
+        String sqlState = cause instanceof java.sql.SQLException sql ? sql.getSQLState() : null;
+        log.error("Error de integridad SQLSTATE={}: {}", sqlState, cause.getMessage());
+        if ("22001".equals(sqlState)) {
+            return ResponseEntity.badRequest().body(new ErrorApi("El servidor no puede guardar un contenido de esta longitud."));
+        }
+        if ("23514".equals(sqlState)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorApi("No se pudo guardar por un conflicto de datos."));
+        }
         return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorApi("La operación no es válida: el dato ya existe o esta referenciado"));
     }
 
