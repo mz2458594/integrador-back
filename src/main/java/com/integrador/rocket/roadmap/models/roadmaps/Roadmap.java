@@ -3,6 +3,7 @@ package com.integrador.rocket.roadmap.models.roadmaps;
 import com.integrador.rocket.roadmap.models.roadmaps.dto.RoadmapRegister;
 import com.integrador.rocket.roadmap.models.roadmaps.dto.RoadmapUpdate;
 import com.integrador.rocket.roadmap.models.roadmapsteps.RoadmapStep;
+import com.integrador.rocket.roadmap.models.roadmapsteps.dto.RoadmapStepRegister;
 import com.integrador.rocket.roadmap.models.userroadmaps.UserRoadmap;
 import com.integrador.rocket.roadmap.models.users.User;
 import jakarta.persistence.*;
@@ -63,8 +64,14 @@ public class Roadmap {
         this.createdVia = roadmapRegister.createdVia();
         this.user = user;
 
-        // REVISAR LO DE ROADMAPSTEPS Y STEPRESOURCE
-        // PARA Q EN UN MISMO CONTROLADOR SE PUEDA SUBIR
+        if (roadmapRegister.steps() != null) {
+            for (int index = 0; index < roadmapRegister.steps().size(); index++) {
+                var step = roadmapRegister.steps().get(index);
+                roadmapSteps.add(new RoadmapStep(new RoadmapStepRegister(
+                        step.title(), step.description(), index, null, step.x(), step.y()), this));
+            }
+        }
+
     }
 
     public void actualizar(RoadmapUpdate roadmapUpdate) {

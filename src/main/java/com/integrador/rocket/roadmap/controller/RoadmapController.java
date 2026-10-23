@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -62,10 +63,11 @@ public class RoadmapController {
 
     @Transactional
     @PutMapping("/{id}")
-    public ResponseEntity<RoadmapDetail> actualizarRoadmap(@RequestBody RoadmapUpdate roadmapUpdate, @PathVariable Long id) {
+    public ResponseEntity<RoadmapDetail> actualizarRoadmap(@AuthenticationPrincipal User user, @RequestBody RoadmapUpdate roadmapUpdate, @PathVariable Long id) {
 
         var roadmap = roadmapRepository.getReferenceById(id);
 
+        requireOwner(roadmap, user);
         roadmap.actualizar(roadmapUpdate);
 
         return ResponseEntity.ok(new RoadmapDetail(roadmap));
@@ -73,9 +75,16 @@ public class RoadmapController {
 
     @Transactional
     @DeleteMapping("/{id}")
-    public ResponseEntity eliminarRoadmap(@PathVariable Long id) {
-        roadmapRepository.deleteById(id);
+    public ResponseEntity eliminarRoadmap(@AuthenticationPrincipal User user, @PathVariable Long id) {
+        var roadmap = roadmapRepository.getReferenceById(id);
+        requireOwner(roadmap, user);
+        roadmapRepository.delete(roadmap);
         return ResponseEntity.noContent().build();
     }
 
+    private void requireOwner(Roadmap roadmap, User user) {
+        if (user == null || roadmap.getUser() == null || !roadmap.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("Solo el propietario puede modificar este roadmap");
+        }
+    }
 }

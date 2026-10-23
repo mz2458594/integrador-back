@@ -1,5 +1,6 @@
 package com.integrador.rocket.roadmap.controller;
 
+import com.integrador.rocket.roadmap.models.roadmaps.Roadmap;
 import com.integrador.rocket.roadmap.models.roadmapsteps.RoadmapStep;
 import com.integrador.rocket.roadmap.models.roadmapsteps.dto.RoadmapStepDetail;
 import com.integrador.rocket.roadmap.models.roadmapsteps.dto.RoadmapStepList;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -59,6 +61,7 @@ public class RoadmapStepsController {
 
         var roadmap = roadmapRepository.getReferenceById(roadmapStepRegister.roadmapId());
 
+        requireOwner(roadmap, user);
         var roadmapStep = roadmapStepsRepository.save(new RoadmapStep(roadmapStepRegister, roadmap));
 
         var uri = uriComponentsBuilder.path("/roadmap-step/{id}").buildAndExpand(roadmapStep.getId()).toUri();
@@ -68,10 +71,15 @@ public class RoadmapStepsController {
 
     @Transactional
     @PutMapping("/{id}")
-    public ResponseEntity<RoadmapStepDetail> actualizarRoadmapStep(@RequestBody RoadmapStepUpdate roadmapStepUpdate, @PathVariable Long id) {
+    public ResponseEntity<RoadmapStepDetail> actualizarRoadmapStep(@AuthenticationPrincipal User user, @RequestBody RoadmapStepUpdate roadmapStepUpdate, @PathVariable Long id) {
 
         var roadmapStep = roadmapStepsRepository.getReferenceById(id);
 
+        requireOwner(roadmapStep.getRoadmap(), user);
+        if ((roadmapStepUpdate.title() != null && roadmapStepUpdate.title().isBlank())
+                || (roadmapStepUpdate.description() != null && roadmapStepUpdate.description().isBlank())) {
+            throw new jakarta.validation.ValidationException("El titulo y la descripcion no pueden estar vacios");
+        }
         roadmapStep.actualizar(roadmapStepUpdate);
 
         return ResponseEntity.ok(new RoadmapStepDetail(roadmapStep));
@@ -79,9 +87,16 @@ public class RoadmapStepsController {
 
     @Transactional
     @DeleteMapping("/{id}")
-    public ResponseEntity eliminarRoadmapStep(@PathVariable Long id) {
-        roadmapStepsRepository.deleteById(id);
+    public ResponseEntity eliminarRoadmapStep(@AuthenticationPrincipal User user, @PathVariable Long id) {
+        var step = roadmapStepsRepository.getReferenceById(id);
+        requireOwner(step.getRoadmap(), user);
+        roadmapStepsRepository.delete(step);
         return ResponseEntity.noContent().build();
     }
 
+    private void requireOwner(Roadmap roadmap, User user) {
+        if (user == null || roadmap.getUser() == null || !roadmap.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("Solo el propietario puede modificar los pasos");
+        }
+    }
 }

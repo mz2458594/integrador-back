@@ -9,6 +9,9 @@ import com.integrador.rocket.roadmap.models.users.User;
 import com.integrador.rocket.roadmap.repositories.RoadmapRepository;
 import com.integrador.rocket.roadmap.repositories.RoadmapStepsRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -41,6 +44,10 @@ class RoadmapCoordinatesControllerTest {
         steps = mock(RoadmapStepsRepository.class);
         roadmap = mock(Roadmap.class);
         when(roadmap.getId()).thenReturn(7L);
+        User owner = mock(User.class);
+        when(owner.getId()).thenReturn(2L);
+        when(roadmap.getUser()).thenReturn(owner);
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(owner, null, List.of()));
         when(roadmaps.getReferenceById(7L)).thenReturn(roadmap);
         step = new RoadmapStep(new RoadmapStepRegister("React", "Hooks", 1, 7L, 450.5, -25.25), roadmap);
         ReflectionTestUtils.setField(step, "id", 12L);
@@ -61,6 +68,9 @@ class RoadmapCoordinatesControllerTest {
                         new AuthenticationPrincipalArgumentResolver())
                 .build();
     }
+
+    @AfterEach
+    void clearSecurity() { SecurityContextHolder.clearContext(); }
 
     @Test
     void createAcceptsFractionalAndNegativeCoordinates() throws Exception {
