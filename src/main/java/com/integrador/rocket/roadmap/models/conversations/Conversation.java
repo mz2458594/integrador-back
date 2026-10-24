@@ -39,6 +39,9 @@ public class Conversation {
     @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL)
     private List<Message> messages = new ArrayList<>();
 
+    @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ConversationReadState> readStates = new ArrayList<>();
+
     @ManyToMany
     @JoinTable(
             name = "conversation_participant",
