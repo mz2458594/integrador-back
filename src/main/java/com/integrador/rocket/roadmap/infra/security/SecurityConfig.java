@@ -10,6 +10,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -21,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Autowired
@@ -47,6 +49,7 @@ public class SecurityConfig {
                     request.requestMatchers(HttpMethod.PUT, "/vocational-question/**", "/vocational-option/**").hasRole("ADMINISTRADOR");
                     request.requestMatchers(HttpMethod.DELETE, "/vocational-question/**", "/vocational-option/**").hasRole("ADMINISTRADOR");
                     request.requestMatchers("/v3/api-docs/**", "/swagger-ui.html/**", "/swagger-ui/**", "/ws/**").permitAll();
+                    request.requestMatchers("/admin/**").hasRole("ADMINISTRADOR");
                     request.anyRequest().authenticated();
                 })
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

@@ -152,7 +152,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return isActive;
     }
 
     public void actualizar(UserUpdate userUpdate, String password) {
@@ -180,6 +180,8 @@ public class User implements UserDetails {
             this.biography = userUpdate.biography();
         }
     }
+
+    public void setActiveByAdmin(boolean active) { this.isActive = active; }
 
     public void eliminar() {
         this.isActive = false;

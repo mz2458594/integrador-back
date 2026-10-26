@@ -1,6 +1,7 @@
 package com.integrador.rocket.roadmap.controller;
 
 import com.integrador.rocket.roadmap.infra.security.TokenService;
+import com.integrador.rocket.roadmap.models.users.Role;
 import com.integrador.rocket.roadmap.models.users.User;
 import com.integrador.rocket.roadmap.models.users.dto.UserAuthentication;
 import com.integrador.rocket.roadmap.models.users.dto.UserDetail;
@@ -91,7 +92,7 @@ public class AuthenticationController {
     public ResponseEntity<UserDetail> crearUsuario(@RequestBody @Valid UserRegister userRegister, UriComponentsBuilder uriComponentsBuilder) {
 
 
-        var user = userRepository.save(new User(userRegister, passwordEncoder.encode(userRegister.password())));
+        var user = userRepository.save(new User(new UserRegister(userRegister.name(), userRegister.email(), Role.ESTUDIANTE, userRegister.password()), passwordEncoder.encode(userRegister.password())));
 
         var uri = uriComponentsBuilder.path("/user/{id}").buildAndExpand(user.getId()).toUri();
 

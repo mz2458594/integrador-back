@@ -87,6 +87,7 @@ public class Roadmap {
             this.description = roadmapUpdate.description();
         }
 
+        if (roadmapUpdate.category() != null) this.category = roadmapUpdate.category();
         this.isPublic = roadmapUpdate.isPublic();
 
 
