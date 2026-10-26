@@ -102,6 +102,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<AiInteraction> aiInteractions = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<com.integrador.rocket.roadmap.models.roadmaps.RoadmapLike> roadmapLikes = new ArrayList<>();
+
     public User(UserRegister userRegister, String password) {
         this.name = userRegister.name();
         this.email = userRegister.email();

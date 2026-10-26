@@ -56,6 +56,9 @@ public class Roadmap {
     @OneToMany(mappedBy = "roadmap", cascade = CascadeType.ALL)
     private List<UserRoadmap> userRoadmaps = new ArrayList<>();
 
+    @OneToMany(mappedBy = "roadmap", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RoadmapLike> likes = new ArrayList<>();
+
     public Roadmap(@Valid RoadmapRegister roadmapRegister, User user) {
         this.title = roadmapRegister.title();
         this.description = roadmapRegister.description();
